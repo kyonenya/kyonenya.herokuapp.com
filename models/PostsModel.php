@@ -8,15 +8,16 @@ class PostsModel extends Model
   
   public function fetchAllPostlists(): array
   {
-/*    $sql = '
+    $sql = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
         FROM posts
         LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
           GROUP BY posts.id
-        ORDER BY id DESC';*/
+        ORDER BY id DESC';
 
     // PostgreSQL用
+    /*
     $sql = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
         FROM posts
@@ -24,7 +25,7 @@ class PostsModel extends Model
           ON posts.id = tags.post_id
           GROUP BY posts.id
             ORDER BY id DESC";
-
+    */
     $posts = $this->fetchAll($sql);
     
     $postlists = [];

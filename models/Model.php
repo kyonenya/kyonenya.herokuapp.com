@@ -1,8 +1,8 @@
 <?php
 /**
- * Modelクラス
+ * class Model
  * データベースの各テーブルごとの処理。
- * テーブルごとにインスタンスを生成する。
+ * 
  */
 abstract class Model
 {

@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ * class Controller
  * 
  */
 abstract class Controller
@@ -38,16 +38,3 @@ abstract class Controller
   }
   
 }
-/*
-require '../bootstrap.php';
-$config = new Config();
-$controller = new Controller($config);
-// print_r($controller->findModel('PostsModel')->fetchAllPostlists());
-$model = $controller->findModel('PostsModel');
-var_dump($model);
-var_dump($controller->models);
-echo PHP_EOL;
-$model2 = $controller->findModel('PostsModel');
-var_dump($model2);
-var_dump($controller->models);
-*/

@@ -1,10 +1,13 @@
 <?php
-
-class PostlistController extends Controller
+/**
+ * PostController.php
+ * 
+ */
+class PostController extends Controller
 {
   // protected $config;
   // protected $view;
-
+  
   public function indexAction(): string
   {
     $posts = $this->findModel('PostsModel')->fetchAllPostlists();
@@ -32,4 +35,5 @@ class PostlistController extends Controller
   {
     return $this->view->render('works.php', [], 'layout.php');
   }
+
 }

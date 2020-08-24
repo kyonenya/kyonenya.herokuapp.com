@@ -1,4 +1,7 @@
 <?php
+/**
+ * 
+ */
 class TagsModel extends Model
 {
   public function fetchTags(int $id): array
@@ -15,8 +18,5 @@ class TagsModel extends Model
     
     return $tags;
   }
-  
-  // SELECT posts.title, tags.tag FROM posts LEFT OUTER JOIN tags ON posts.id = tags.post_id;
-  
-  // SELECT posts.title, GROUP_CONCAT(tags.tag) FROM posts LEFT OUTER JOIN tags ON posts.id = tags.post_id GROUP BY posts.id;
+
 }

@@ -21,17 +21,6 @@ class Config
       'action' => 'worksAction',
     ],
   ];
-  
-  // DB接続設定
-  $url = parse_url(getenv('DATABASE_URL'));
-  $dsn = sprintf('pgsql:host=%s;dbname=%s', $url['host'], substr($url['path'], 1));
-  
-  const DB_CONFIGS = [
-    'dsn' => $dsn,
-    'user' => $url['user'],
-    'password' => $url['pass'],
-    'options' => [],
-  ];
 
 /*  const DB_CONFIGS = [
     'dsn' => 'sqlite:../sqlite/blog',
@@ -39,4 +28,13 @@ class Config
     'password' => '',
     'options' => [],
   ];*/
+
+  const DB_CONFIGS = [
+    'dsn' => 'pgsql:host=ec2-23-20-168-40.compute-1.amazonaws.com
+      ;dbname=de9v5vgk53jcli',
+    'user' => 'zxehjkojxygwch',
+    'password' => '3b483c8c5a70f746ffdf7f08d600d41b6a5c59d1fb911ac7b2046a8592b9b63e',
+    'options' => [],
+  ];
+ 
 }

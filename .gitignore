@@ -1,0 +1,4 @@
+vendor/
+.env
+# DraftCodeで使用するデータベース（SQLite）
+sqlite/

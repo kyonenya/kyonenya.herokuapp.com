@@ -1,0 +1,8 @@
+# もしmod_rewriteが使えるならば、
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # アクセス先にファイルが存在しない場合に限り、
+  RewriteCond %{REQUEST_FILENAME} !-f
+  # 全てのアクセスをindex.phpに集約する。
+  RewriteRule ^(.*)$ index.php [QSA, L]
+</IfModule>

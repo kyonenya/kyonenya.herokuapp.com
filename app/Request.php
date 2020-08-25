@@ -1,54 +1,73 @@
 <?php
-
+/**
+ * Requestクラス
+ * ブラウザからのリクエスト情報やURL文字列の処理
+ */
 class Request
 {
-  // URLの'https://example.com/'以降を取得
-  /*
-  public function getRequestUri() : ?string
-  {
-    return $_SERVER['REQUEST_URI'];
-  }
-  */
-  
-  // index.phpファイルへのパスを取得
-  public function getBaseUrl(): ?string
-  {
-    $request_uri = $_SERVER['REQUEST_URI'];
-    $index_path = $_SERVER['SCRIPT_NAME'];  // index.phpファイルまでのパス
-    $index_dir = dirname($script_name);  // index.phpがあるフォルダまでのパス
-
-    // 1. URLに'index.php'が省略されていないなら、
-    if (strpos($request_uri, $index_path) === 0) {
-      // そのままindex.phpまでのパスを返す。
-      // return $index_path; // /myproject/web/index.php
-      // パスインフォが使えないDraftCode環境に合わせる。
-      return $index_path . '?l=';
-    }
-    // 2. URLにindex.phpが省略されているなら、例）foo/bar/(index.php)/list
-    elseif (strpos($request_uri, $index_dir) === 0) {
-      // index.phpがあるフォルダまでのパスを返す。
-      return rtrim($index_dir, '/');  // foo/bar
-    }
-    
-    // 3. その他：ルート直下にindex.phpがある場合
-    return '';
-  }
-  
-  // URLの'index.php'以降を取得
+  /**
+   * パス情報を取得
+   * URLの中で最も重要な、ルーティングに用いる最末尾の部分。
+   * 例）'posts/123'
+   */
   public function getPathInfo(): ?string
   {
-    // return $_SERVER['PATH_INFO'];
+    $reuestUri = $this->getRequestUri();
+    $baseUrl = $this->getBaseUrl();
     
-
-    // DraftCodeではApacheなどの機能であるパスインフォが使えないので、index.php?l=(ここにパスインフォの代わりを書く)
-    return $this->getGet('l', '/');
-  } 
-
-  
-  // GETパラメータを取得、第二引数にnullだったとき用の値
-  public function getGet(string $name, string $default = null)
-  {
-    return filter_input(INPUT_GET, $name) ?? $default;
+    if (isset($_SERVER['PATH_INFO'])) {
+      return $_SERVER['PATH_INFO'];
+    }    
+    
+    if (Config::isRewriteEngineOn()) {
+      // リクエストURIからベースURLを引き算する
+      return substr($requestUri, strlen($baseUrl)); 
+    } else {
+      // クエリ文字列でパス情報を代用する
+      return $this->getGet('l', '/');      
+    }   
   }
 
+  /**
+   * ベースURLを取得
+   * リクエストURIのうち、パス情報を除いた無意味な部分。
+   * 例）'/index.php'
+   */
+  public function getBaseUrl(): ?string
+  {
+    if (Config::isRewriteEngineOn()) {
+      // ドキュメントルート直下にindex.phpを置く場合
+      return '';
+    } else {
+      // クエリ文字列でパス情報を代用する場合
+      return $_SERVER['SCRIPT_NAME'] . '?l=';  // '/index.php?l='
+    }
+  }
+  
+  /**
+   * リクエストURIを取得
+   * URLのドメイン以降の部分。ただしGETパラメーターを除く。
+   * リクエストURI＝ベースURL＋パス情報
+   * 例）'/index.php/posts/123'
+   */
+  public function getRequestUri()
+  {
+    // GETパラメータがあれば削除
+    $pos = strpos($_SERVER['REQUEST_URI'], '?');
+    
+    if ($pos === false) {
+      return $_SERVER['REQUEST_URI'];
+    } else {
+      // 先頭から'?'の前までを返す
+      return substr($_SERVER['REQUEST_URI'], 0, $pos);
+    }   
+  }
+
+  // GETパラメータを取得
+  public function getGet(string $name, string $default = null)
+  {
+    return filter_input(INPUT_GET, $name) 
+      ?? $default;  // GETパラメータがnullの場合
+  }
+  
 }

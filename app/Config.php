@@ -37,7 +37,7 @@ class Config
     'options' => [],
   ];
 
-  public static function isPathInfoMode(): boolean
+  public static function isRewriteEngineOn(): bool
   {
     $phpEnv = getenv('PHP_ENV');
     

@@ -8,7 +8,8 @@ class PostsModel extends Model
   
   public function fetchAllPostlists(): array
   {
-    $sql = '
+    // 複数タグの結合にGROUP_CONCATを使う
+    $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
         FROM posts
         LEFT OUTER JOIN tags
@@ -16,16 +17,24 @@ class PostsModel extends Model
           GROUP BY posts.id
         ORDER BY id DESC';
 
-    // PostgreSQL用
-    /*
-    $sql = "
+    // PostgreSQLでは複数タグの結合にSTRING_AGGを使う
+    $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
         FROM posts
         LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
           GROUP BY posts.id
-            ORDER BY id DESC";
-    */
+        ORDER BY id DESC";
+    
+    switch (Config::getDbType()) {
+      case 'postgres': 
+        $sql = $sql_postgres;
+        break;
+      case 'sqlite': 
+        $sql = $sql_sqlite;
+        break;
+    }
+    
     $posts = $this->fetchAll($sql);
     
     $postlists = [];

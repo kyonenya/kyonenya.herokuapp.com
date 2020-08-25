@@ -13,7 +13,7 @@ abstract class Model
     // DBにまだ接続されていないならば、
     if (!isset($this->db)) {
       // 接続して接続情報を保持。
-      $this->db = $this->connectDb(Config::DB_CONFIGS);
+      $this->db = $this->connectDb(Config::getDbConfig());
     }
   }
   
@@ -39,9 +39,9 @@ abstract class Model
   }
  
   // DB接続
-  public function connectDb(array $configs): object
+  public function connectDb(array $config): object
   {    
-    $db = new PDO($configs['dsn'], $configs['user'], $configs['password'], $configs['options']);
+    $db = new PDO($config['dsn'], $config['user'], $config['password'], $config['options']);
     
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     

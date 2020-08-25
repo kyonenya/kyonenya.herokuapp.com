@@ -55,6 +55,7 @@
 <footer class="ly_footer">
   <div class="ly_footer_inner">
     <p class="el_footerCopyright">&copy; 2020- <a href="<?= $baseUrl ?>/about">placet experiri</a></p>
+    <pre><?= $_SERVER['PATH_INFO'] ?></pre>
   </div>
 </footer>
 </body>

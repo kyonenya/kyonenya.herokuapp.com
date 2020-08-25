@@ -12,7 +12,7 @@ class Request
    */
   public function getPathInfo(): ?string
   {
-    $reuestUri = $this->getRequestUri();
+    $requestUri = $this->getRequestUri();
     $baseUrl = $this->getBaseUrl();
     
     if (isset($_SERVER['PATH_INFO'])) {
@@ -52,9 +52,9 @@ class Request
    */
   public function getRequestUri()
   {
-    // GETパラメータがあれば削除
     $pos = strpos($_SERVER['REQUEST_URI'], '?');
-    
+
+    // GETパラメータがあれば削除
     if ($pos === false) {
       return $_SERVER['REQUEST_URI'];
     } else {

@@ -1,6 +1,7 @@
 <?php
 /**
- * 
+ * PostsModel.php
+ * postsテーブル（ならびにtagsテーブル）を操作
  */
 class PostsModel extends Model 
 {
@@ -8,7 +9,7 @@ class PostsModel extends Model
   
   public function fetchAllPostlists(): array
   {
-    // 複数タグの結合にGROUP_CONCATを使う
+    // SQlite, MySQLでは複数タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
         FROM posts
@@ -17,7 +18,7 @@ class PostsModel extends Model
           GROUP BY posts.id
         ORDER BY id DESC';
 
-    // PostgreSQLでは複数タグの結合にSTRING_AGGを使う
+    // PostgreSQLではSTRING_AGGを使う
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
         FROM posts
@@ -26,13 +27,12 @@ class PostsModel extends Model
           GROUP BY posts.id
         ORDER BY id DESC";
     
-    switch (Config::getDbType()) {
-      case 'postgres': 
-        $sql = $sql_postgres;
-        break;
-      case 'sqlite': 
-        $sql = $sql_sqlite;
-        break;
+    // DBごとにスイッチ
+    $dbType = Config::getDbType();
+    if ($dbType === 'postgres') {
+      $sql = $sql_postgres;
+    } else {
+      $sql = $sql_sqlite;
     }
     
     $posts = $this->fetchAll($sql);
@@ -54,7 +54,7 @@ class PostsModel extends Model
   
   public function fetchArticle(int $id): array
   {
-    $sql = "SELECT * FROM posts WHERE id = :id";
+    $sql = 'SELECT * FROM posts WHERE id = :id';
     
     $article = $this->fetch($sql, [
       ':id' => $id,
@@ -62,6 +62,5 @@ class PostsModel extends Model
     
     return $article;
   }
-   
-  // select * from posts join tags on posts.id = tags.post_id;
+  
 }

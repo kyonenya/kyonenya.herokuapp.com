@@ -1,9 +1,6 @@
 <?php
 class Config
 {
-  // 実行環境。本番環境なら'heroku'、DrafCodeなら''。
-  protected $phpEnv;
-
   // ルーティング定義
   const ROUTE_DEFINITIONS = [
     '/' => [
@@ -39,14 +36,11 @@ class Config
     'password' => '3b483c8c5a70f746ffdf7f08d600d41b6a5c59d1fb911ac7b2046a8592b9b63e',
     'options' => [],
   ];
-  
-  public function __construct()
-  {
-    $this->phpEnv = getenv('PHP_ENV');
-  }
-  
+
   public static function isPathInfoMode(): boolean
   {
+    $phpEnv = getenv('PHP_ENV');
+    
     if ($phpEnv === 'heroku') {
       return true;
     } else {
@@ -56,6 +50,9 @@ class Config
   
   public static function getDbType(): string
   {
+    // PHP実行環境。本番環境なら'heroku'、DrafCodeなら''
+    $phpEnv = getenv('PHP_ENV');
+    
     if ($phpEnv === 'heroku') {
       return 'postgres';
     } else {

@@ -39,22 +39,19 @@ class Config
 
   public static function isRewriteEngineOn(): bool
   {
-    $phpEnv = getenv('PHP_ENV');
-    
-    if ($phpEnv === 'heroku') {
-      return true;
-    } else {
+    if (self::isDraftCodeEnv()) {
       return false;
-    }    
+    } else {
+      return true;
+    }
   }
   
   public static function getDbType(): string
-  {
-    // PHP実行環境。本番環境なら'heroku'、DrafCodeなら''
-    $phpEnv = getenv('PHP_ENV');
-    
-    if ($phpEnv === 'heroku') {
+  {    
+    if (self::isHerokuEnv()) {
       return 'postgres';
+    } elseif (self::isDraftCodeEnv()) {
+      return 'sqlite';
     } else {
       return 'sqlite';
     }
@@ -69,6 +66,17 @@ class Config
     } elseif ($dbType === 'sqlite') {
       return self::SQLITE_CONFIG;
     }
+  }
+
+  public static function isDraftCodeEnv(): bool
+  {
+    return $_SERVER['SERVER_SOFTWARE'] === 'DraftCode IDE Runtime';
+  }
+  
+  public static function isHerokuEnv(): bool
+  {
+    // return getenv('PHP_ENV') === 'heroku';
+    return $_ENV['PHP_ENV'] === 'heroku';
   }
 
 }

@@ -5,7 +5,7 @@
  * ブラウザからの全てのアクセスをここに集める。
  */
 require '../bootstrap.php';
-
+// $_ENV['PHP_ENV'] = 'heroku';
 $app = new App();
 $app->run();
 

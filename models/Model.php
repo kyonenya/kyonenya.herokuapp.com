@@ -42,7 +42,6 @@ abstract class Model
   public function connectDb(array $config): object
   {    
     $db = new PDO($config['dsn'], $config['user'], $config['pass']);
-    
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     return $db;

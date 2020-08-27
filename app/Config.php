@@ -25,8 +25,7 @@ class Config
   const SQLITE_CONFIG = [
     'dsn' => 'sqlite:../sqlite/blog',
     'user' => '',
-    'password' => '',
-    'options' => [],
+    'pass' => '',
   ];
 
   // ApacheのRewriteEngineがオンかどうか

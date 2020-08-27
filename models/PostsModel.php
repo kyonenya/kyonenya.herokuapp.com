@@ -5,11 +5,27 @@
  */
 class PostsModel extends Model 
 {
-  // $db;
-  
-  public function fetchAllPostlists(): array
+  public function getPostlist() {
+    $posts = $this->fetchAllPosts();
+    
+    $postlist = array_map(function ($post) {
+      $created_datetime = new DateTime($post['created_at']);
+      $created_at = $created_datetime->format('Y-m-d');
+      return [
+        'id' => $post['id'],
+        'title' => $post['title'],
+        'body' => mb_substr(strip_tags($post['body']), 0, 110),
+        'created_at' => $created_at,
+        'tags' => explode(',', $post['tags']),
+      ];
+    }, $posts);
+    
+    return $postlist;
+  }
+
+  public function fetchAllPosts(): array
   {
-    // SQlite, MySQLでは複数タグの結合にGROUP_CONCATを使う
+    // 複数の記事タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
         FROM posts
@@ -29,38 +45,22 @@ class PostsModel extends Model
     
     // DBごとにスイッチ
     $dbType = Config::getDbType();
-    if ($dbType === 'postgres') {
-      $sql = $sql_postgres;
-    } else {
-      $sql = $sql_sqlite;
-    }
-    
-    $posts = $this->fetchAll($sql);
-    
-    $postlists = [];
-    
-    foreach ($posts as $post) {
-      $postlists[] = [
-        'id' => $post['id'],
-        'title' => $post['title'],
-        'body' => mb_substr(strip_tags($post['body']), 0, 110),
-        'created_at' => $post['created_at'],
-        'tags' => explode(',', $post['tags']),
-      ];
-    }
-    
-    return $postlists;
+    $sql = $dbType === 'postgres' 
+      ? $sql_postgres
+      : $sql_sqlite;
+
+    return $this->fetchAll($sql);
   }
-  
-  public function fetchArticle(int $id): array
+
+  public function fetchPost(int $id): array
   {
     $sql = 'SELECT * FROM posts WHERE id = :id';
     
-    $article = $this->fetch($sql, [
+    $post = $this->fetch($sql, [
       ':id' => $id,
     ]);
     
-    return $article;
+    return $post;
   }
   
 }

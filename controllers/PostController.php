@@ -10,7 +10,7 @@ class PostController extends Controller
   
   public function indexAction(): string
   {
-    $posts = $this->findModel('PostsModel')->fetchAllPostlists();
+    $posts = $this->findModel('PostsModel')->getPostlist();
 
     return $this->view->render('postlist.php', ['posts' => $posts], 'layout.php');
   }
@@ -19,7 +19,7 @@ class PostController extends Controller
   {
     $id = $params['id'];
     
-    $post = $this->findModel('PostsModel')->fetchArticle($id);
+    $post = $this->findModel('PostsModel')->fetchPost($id);
     
     $post['tags'] = $this->findModel('TagsModel')->fetchTags($id);
     

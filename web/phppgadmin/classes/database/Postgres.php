@@ -109,7 +109,7 @@ class Postgres extends ADODB_base {
 	var $privlist = array(
   		'table' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
   		'view' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-  		'sequence' => array('SELECT', 'UPDATE', 'ALL PRIVILEGES'),
+  		'sequence' => array('USAGE', 'SELECT', 'UPDATE', 'ALL PRIVILEGES'),
   		'database' => array('CREATE', 'TEMPORARY', 'CONNECT', 'ALL PRIVILEGES'),
   		'function' => array('EXECUTE', 'ALL PRIVILEGES'),
   		'language' => array('USAGE', 'ALL PRIVILEGES'),
@@ -169,8 +169,8 @@ class Postgres extends ADODB_base {
 	 * Constructor
 	 * @param $conn The database connection
 	 */
-	function Postgres($conn) {
-		$this->ADODB_base($conn);
+ 	function __construct($conn) {
+ 		parent::__construct($conn);
 	}
 
 	// Formatting functions
@@ -519,10 +519,9 @@ class Postgres extends ADODB_base {
 	 * @return default_with_oids setting
 	 */
 	function getDefaultWithOid() {
-
-		$sql = "SHOW default_with_oids";
-
-		return $this->selectField($sql, 'default_with_oids');
+		// OID support was removed in PG12
+		// But this function is referenced when browsing data
+		return false;
 	}
 
 	/**
@@ -698,7 +697,7 @@ class Postgres extends ADODB_base {
 		if (!$conf['show_system']) {
 			// XXX: The mention of information_schema here is in the wrong place, but
 			// it's the quickest fix to exclude the info schema from 7.4
-			$where = " AND pn.nspname NOT LIKE \$_PATERN_\$pg\_%\$_PATERN_\$ AND pn.nspname != 'information_schema'";
+			$where = " AND pn.nspname NOT LIKE \$_PATTERN_\$pg\_%\$_PATTERN_\$ AND pn.nspname != 'information_schema'";
 			$lan_where = "AND pl.lanispl";
 		}
 		else {
@@ -712,7 +711,7 @@ class Postgres extends ADODB_base {
 			$sql = "SELECT * FROM (";
 		}
 
-		$term = "\$_PATERN_\$%{$term}%\$_PATERN_\$";
+		$term = "\$_PATTERN_\$%{$term}%\$_PATTERN_\$";
 
 		$sql .= "
 			SELECT 'SCHEMA' AS type, oid, NULL AS schemaname, NULL AS relname, nspname AS name
@@ -727,7 +726,7 @@ class Postgres extends ADODB_base {
 				AND pa.attname ILIKE {$term} AND pa.attnum > 0 AND NOT pa.attisdropped AND pc.relkind IN ('r', 'v') {$where}
 			UNION ALL
 			SELECT 'FUNCTION', pp.oid, pn.nspname, NULL, pp.proname || '(' || pg_catalog.oidvectortypes(pp.proargtypes) || ')' FROM pg_catalog.pg_proc pp, pg_catalog.pg_namespace pn
-				WHERE pp.pronamespace=pn.oid AND NOT pp.proisagg AND pp.proname ILIKE {$term} {$where}
+				WHERE pp.pronamespace=pn.oid AND NOT pp.prokind = 'a' AND pp.proname ILIKE {$term} {$where}
 			UNION ALL
 			SELECT 'INDEX', NULL, pn.nspname, pc.relname, pc2.relname FROM pg_catalog.pg_class pc, pg_catalog.pg_namespace pn,
 				pg_catalog.pg_index pi, pg_catalog.pg_class pc2 WHERE pc.relnamespace=pn.oid AND pc.oid=pi.indrelid
@@ -792,7 +791,7 @@ class Postgres extends ADODB_base {
 				UNION ALL
 				SELECT DISTINCT ON (p.proname) 'AGGREGATE', p.oid, pn.nspname, NULL, p.proname FROM pg_catalog.pg_proc p
 					LEFT JOIN pg_catalog.pg_namespace pn ON p.pronamespace=pn.oid
-					WHERE p.proisagg AND p.proname ILIKE {$term} {$where}
+					WHERE p.prokind = 'a' AND p.proname ILIKE {$term} {$where}
 				UNION ALL
 				SELECT DISTINCT ON (po.opcname) 'OPCLASS', po.oid, pn.nspname, NULL, po.opcname FROM pg_catalog.pg_opclass po,
 					pg_catalog.pg_namespace pn WHERE po.opcnamespace=pn.oid
@@ -831,7 +830,7 @@ class Postgres extends ADODB_base {
 		return $this->selectSet($sql);
 	}
 
-	// Schema functons
+	// Schema functions
 
 	/**
 	 * Return all schemas in the current database.
@@ -1039,19 +1038,9 @@ class Postgres extends ADODB_base {
 	 * @return null error
 	 **/
 	function hasObjectID($table) {
-		$c_schema = $this->_schema;
-		$this->clean($c_schema);
-		$this->clean($table);
-
-		$sql = "SELECT relhasoids FROM pg_catalog.pg_class WHERE relname='{$table}'
-			AND relnamespace = (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname='{$c_schema}')";
-
-		$rs = $this->selectSet($sql);
-		if ($rs->recordCount() != 1) return null;
-		else {
-			$rs->fields['relhasoids'] = $this->phpBool($rs->fields['relhasoids']);
-			return $rs->fields['relhasoids'];
-		}
+		// OID support is gone since PG12
+		// But that function is required by table exports
+		return false;
 	}
 
 	/**
@@ -1732,12 +1721,12 @@ class Postgres extends ADODB_base {
 	/**
 	 * Creates a new table in the database copying attribs and other properties from another table
 	 * @param $name The name of the table
-	 * @param $like an array giving the schema ans the name of the table from which attribs are copying from:
+	 * @param $like an array giving the schema and the name of the table from which attribs are copying from:
 	 *		array(
 	 *			'table' => table name,
 	 *			'schema' => the schema name,
 	 *		)
-	 * @param $defaults if true, copy the defaults values as well
+	 * @param $defaults if true, copy the default values as well
 	 * @param $constraints if true, copy the constraints as well (CHECK on table & attr)
 	 * @param $tablespace The tablespace name ('' means none/default)
 	 */
@@ -2366,7 +2355,7 @@ class Postgres extends ADODB_base {
 	
 	/**
 	 * Returns all available autovacuum per table information.
-	 * @param $table if given, return autovacuum info for the given table or return all informations for all table
+	 * @param $table if given, return autovacuum info for the given table or return all information for all tables
 	 *   
 	 * @return A recordset
 	 */
@@ -2402,7 +2391,7 @@ class Postgres extends ADODB_base {
 		/* tmp var to parse the results */
 		$_autovacs = $this->selectSet($sql);
 
-		/* result aray to return as RS */
+		/* result array to return as RS */
 		$autovacs = array();
 		while (!$_autovacs->EOF) {
 			$_ = array(
@@ -2628,6 +2617,24 @@ class Postgres extends ADODB_base {
 	// Sequence functions
 
 	/**
+	 * Determines whether or not the current user can directly access sequence information 
+	 * @param $sequence Sequence Name 
+	 * @return t/f based on user permissions 
+	*/ 
+	function hasSequencePrivilege($sequence) {
+		/* This double-cleaning is deliberate */
+		$f_schema = $this->_schema;
+		$this->fieldClean($f_schema);
+		$this->clean($f_schema);
+		$this->fieldClean($sequence);
+		$this->clean($sequence);
+
+		$sql = "SELECT pg_catalog.has_sequence_privilege('{$f_schema}.{$sequence}','SELECT,USAGE')";
+
+		return $this->execute($sql);
+	}
+
+	/**
 	 * Returns properties of a single sequence
 	 * @param $sequence Sequence name
 	 * @return A recordset
@@ -2638,6 +2645,13 @@ class Postgres extends ADODB_base {
 		$c_sequence = $sequence;
 		$this->fieldClean($sequence);
 		$this->clean($c_sequence);
+
+		$join = ''; 
+		if ($this->hasSequencePrivilege($sequence) == 't') {
+			$join = "CROSS JOIN \"{$c_schema}\".\"{$c_sequence}\" AS s";
+		} else {
+			$join = 'CROSS JOIN ( values (null, null, null) ) AS s (last_value, log_cnt, is_called) ';
+		}; 
 
         $sql = "
             SELECT
@@ -2654,6 +2668,26 @@ class Postgres extends ADODB_base {
                 AND c.oid = m.seqrelid AND c.relname = '{$c_sequence}' AND c.relkind = 'S' AND n.nspname='{$c_schema}' 
                 AND n.oid = c.relnamespace"; 
 
+		$sql = "
+			SELECT
+                c.relname AS seqname,
+				s.last_value, s.log_cnt, s.is_called, 
+                m.seqstart AS start_value, m.seqincrement AS increment_by, m.seqmax AS max_value, m.seqmin AS min_value, 
+                m.seqcache AS cache_value, m.seqcycle AS is_cycled,  
+				pg_catalog.obj_description(c.oid, 'pg_class') as seqcomment, 
+				pg_catalog.pg_get_userbyid(c.relowner) as seqowner,
+				n.nspname
+			FROM 
+				pg_catalog.pg_class c
+     			JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+				JOIN pg_catalog.pg_sequence m ON m.seqrelid = c.oid
+				{$join} 
+			WHERE 
+				c.relkind IN ('S')
+				AND c.relname = '{$c_sequence}' 
+				AND n.nspname = '{$c_schema}' 
+			"; 
+
 		return $this->selectSet( $sql );
 	}
 
@@ -2664,20 +2698,40 @@ class Postgres extends ADODB_base {
 	function getSequences($all = false) {
 		if ($all) {
 			// Exclude pg_catalog and information_schema tables
-			$sql = "SELECT n.nspname, c.relname AS seqname, u.usename AS seqowner
-				FROM pg_catalog.pg_class c, pg_catalog.pg_user u, pg_catalog.pg_namespace n
-				WHERE c.relowner=u.usesysid AND c.relnamespace=n.oid
-				AND c.relkind = 'S'
-				AND n.nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')
-				ORDER BY nspname, seqname";
+			$sql = "
+					SELECT
+						n.nspname, 
+						c.relname AS seqname, 
+						pg_catalog.pg_get_userbyid(c.relowner) as seqowner
+					FROM
+						pg_catalog.pg_class c 
+						JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+					WHERE 
+						c.relkind IN ('S')
+						AND n.nspname NOT IN ('pg_catalog','information_schema')
+						AND n.nspname !~ '^pg_toast'
+						AND pg_catalog.pg_table_is_visible(c.oid)
+					ORDER BY 
+						nspname, seqname;";
 		} else {
 			$c_schema = $this->_schema;
 			$this->clean($c_schema);
-			$sql = "SELECT c.relname AS seqname, u.usename AS seqowner, pg_catalog.obj_description(c.oid, 'pg_class') AS seqcomment,
-				(SELECT spcname FROM pg_catalog.pg_tablespace pt WHERE pt.oid=c.reltablespace) AS tablespace
-				FROM pg_catalog.pg_class c, pg_catalog.pg_user u, pg_catalog.pg_namespace n
-				WHERE c.relowner=u.usesysid AND c.relnamespace=n.oid
-				AND c.relkind = 'S' AND n.nspname='{$c_schema}' ORDER BY seqname";
+			$sql = "
+					SELECT
+						n.nspname, 
+						c.relname AS seqname, 
+						pg_catalog.obj_description(c.oid, 'pg_class') AS seqcomment,
+						(SELECT spcname FROM pg_catalog.pg_tablespace pt WHERE pt.oid=c.reltablespace) AS tablespace, 
+						pg_catalog.pg_get_userbyid(c.relowner) as seqowner
+					FROM
+						pg_catalog.pg_class c 
+						JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+					WHERE 
+						c.relkind IN ('S')
+						AND n.nspname = '{$c_schema}' 
+						AND pg_catalog.pg_table_is_visible(c.oid)
+					ORDER BY 
+						nspname, seqname;";
 		}
 
 		return $this->selectSet( $sql );
@@ -2863,7 +2917,7 @@ class Postgres extends ADODB_base {
 	 * @param $restartvalue The sequence current value
 	 * @param $cachevalue The sequence cache value
 	 * @param $cycledvalue Sequence can cycle ?
-	 * @param $startvalue The sequence start value when issueing a restart
+	 * @param $startvalue The sequence start value when issuing a restart
 	 * @return 0 success
 	 */
 	function alterSequenceProps($seqrs, $increment,	$minvalue, $maxvalue,
@@ -2902,7 +2956,7 @@ class Postgres extends ADODB_base {
 	 * @param $restartvalue The starting value
 	 * @param $cachevalue The cache value
 	 * @param $cycledvalue True if cycled, false otherwise
-	 * @param $startvalue The sequence start value when issueing a restart
+	 * @param $startvalue The sequence start value when issuing a restart
 	 * @return 0 success
 	 * @return -3 rename error
 	 * @return -4 comment error
@@ -2968,7 +3022,7 @@ class Postgres extends ADODB_base {
 	 * @param $restartvalue The starting value
 	 * @param $cachevalue The cache value
 	 * @param $cycledvalue True if cycled, false otherwise
-	 * @param $startvalue The sequence start value when issueing a restart
+	 * @param $startvalue The sequence start value when issuing a restart
 	 * @return 0 success
 	 * @return -1 transaction error
 	 * @return -2 get existing sequence error
@@ -3061,7 +3115,7 @@ class Postgres extends ADODB_base {
 
 	/**
 	 * Updates a view.
-	 * @param $viewname The name fo the view to update
+	 * @param $viewname The name of the view to update
 	 * @param $definition The new definition for the view
 	 * @return 0 success
 	 * @return -1 transaction error
@@ -3492,7 +3546,7 @@ class Postgres extends ADODB_base {
 
 		// get the max number of col used in a constraint for the table
 		$sql = "SELECT DISTINCT
-			max(SUBSTRING(array_dims(c.conkey) FROM  \$patern\$^\\[.*:(.*)\\]$\$patern\$)) as nb
+			max(SUBSTRING(array_dims(c.conkey) FROM  \$pattern\$^\\[.*:(.*)\\]$\$pattern\$)) as nb
 		FROM pg_catalog.pg_constraint AS c
 			JOIN pg_catalog.pg_class AS r ON (c.conrelid=r.oid)
 			JOIN pg_catalog.pg_namespace AS ns ON (r.relnamespace=ns.oid)
@@ -3681,7 +3735,7 @@ class Postgres extends ADODB_base {
 	 * @param $del_action The action for deletes (eg. RESTRICT)
 	 * @param $match The match type (eg. MATCH FULL)
 	 * @param $deferrable The deferrability (eg. NOT DEFERRABLE)
-	 * @param $intially The initial deferrability (eg. INITIALLY IMMEDIATE)
+	 * @param $initially The initial deferrability (eg. INITIALLY IMMEDIATE)
 	 * @param $name (optional) The name to give the key, otherwise default name is assigned
 	 * @return 0 success
 	 * @return -1 no fields given
@@ -4179,12 +4233,18 @@ class Postgres extends ADODB_base {
 				pg_catalog.obj_description(p.oid, 'pg_proc') AS procomment,
 				p.proname || ' (' || pg_catalog.oidvectortypes(p.proargtypes) || ')' AS proproto,
 				CASE WHEN p.proretset THEN 'setof ' ELSE '' END || pg_catalog.format_type(p.prorettype, NULL) AS proreturns,
-				u.usename AS proowner
+				u.usename AS proowner,
+				CASE p.prokind
+  					WHEN 'a' THEN 'agg'
+  					WHEN 'w' THEN 'window'
+  					WHEN 'p' THEN 'proc'
+  					ELSE 'func'
+ 				END as protype
 			FROM pg_catalog.pg_proc p
 				INNER JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
 				INNER JOIN pg_catalog.pg_language pl ON pl.oid = p.prolang
 				LEFT JOIN pg_catalog.pg_user u ON u.usesysid = p.proowner
-			WHERE NOT p.proisagg
+			WHERE NOT p.prokind = 'a' 
 				AND {$where}
 			ORDER BY p.proname, proresult
 			";
@@ -5890,7 +5950,7 @@ class Postgres extends ADODB_base {
 				a.agginitval, a.aggsortop, u.usename, pg_catalog.obj_description(p.oid, 'pg_proc') AS aggrcomment
 			FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n, pg_catalog.pg_user u, pg_catalog.pg_aggregate a
 			WHERE n.oid = p.pronamespace AND p.proowner=u.usesysid AND p.oid=a.aggfnoid
-				AND p.proisagg AND n.nspname='{$c_schema}'
+				AND p.prokind = 'a' AND n.nspname='{$c_schema}'
 				AND p.proname='" . $name . "'
 				AND CASE p.proargtypes[0]
 					WHEN 'pg_catalog.\"any\"'::pg_catalog.regtype THEN ''
@@ -5912,7 +5972,7 @@ class Postgres extends ADODB_base {
 			   pg_catalog.obj_description(p.oid, 'pg_proc') AS aggrcomment
 			   FROM pg_catalog.pg_proc p, pg_catalog.pg_namespace n, pg_catalog.pg_user u, pg_catalog.pg_aggregate a
 			   WHERE n.oid = p.pronamespace AND p.proowner=u.usesysid AND p.oid=a.aggfnoid
-			   AND p.proisagg AND n.nspname='{$c_schema}' ORDER BY 1, 2";
+			   AND p.prokind = 'a' AND n.nspname='{$c_schema}' ORDER BY 1, 2";
 
 		return $this->selectSet($sql);
 	}
@@ -6933,7 +6993,7 @@ class Postgres extends ADODB_base {
 	}
 
 	/**
-	 * Helper function that computes encypted PostgreSQL passwords
+	 * Helper function that computes encrypted PostgreSQL passwords
 	 * @param $username The username
 	 * @param $password The password
 	 */
@@ -7532,12 +7592,15 @@ class Postgres extends ADODB_base {
 						 */
     					if (strlen($query_buf) > 0)
     					    $query_buf .= "\n";
-    					/* append the line to the query buffer */
-    					$query_buf .= $subline;
+    						$query_buf .= $subline;
+					}
     					$query_buf .= ';';
 
+					/* is there anything in the query_buf? */
+					if (trim($query_buf))
+					{
 						// Execute the query. PHP cannot execute
-            			// empty queries, unlike libpq
+						// empty queries, unlike libpq
 						$res = @pg_query($conn, $query_buf);
 
 						// Call the callback function for display
@@ -8008,6 +8071,7 @@ class Postgres extends ADODB_base {
 	function hasConcurrentIndexBuild() { return true; }
 	function hasForceReindex() { return false; }
 	function hasByteaHexDefault() { return true; } 
+	function hasServerOids() { return false; }
 	
 }
 ?>

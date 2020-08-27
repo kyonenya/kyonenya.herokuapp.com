@@ -1,5 +1,6 @@
 <?php
-/**
+
+	/**
 	 * Central phpPgAdmin configuration.  As a user you may modify the
 	 * settings here for your particular configuration.
 	 *
@@ -27,6 +28,7 @@
 
 	// Change the default database only if you cannot connect to template1.
 	// For a PostgreSQL 8.1+ server, you can set this to 'postgres'.
+	// $conf['servers'][0]['defaultdb'] = 'template1';
 	$conf['servers'][0]['defaultdb'] = 'de9v5vgk53jcli';
 
 	// Specify the path to the database dump utilities for this server.
@@ -52,7 +54,7 @@
 	 */
 	//$conf['srv_groups'][0]['desc'] = 'group one';
 
-	/* Add here servers indexes belonging to the group '0' seperated by comma */
+	/* Add here servers indexes belonging to the group '0' separated by comma */
 	//$conf['srv_groups'][0]['servers'] = '0,1,2';
 
 	/* A server can belong to multi groups. Here server 1 is referenced in both
@@ -86,6 +88,7 @@
 	// Default language. E.g.: 'english', 'polish', etc.  See lang/ directory
 	// for all possibilities. If you specify 'auto' (the default) it will use
 	// your browser preference.
+	// $conf['default_lang'] = 'auto';
   // デフォルトで日本語表示
 	$conf['default_lang'] = 'japanese';
 
@@ -102,15 +105,17 @@
 	// will be denied. Only set this false once you have read the FAQ and
 	// understand how to change PostgreSQL's pg_hba.conf to enable
 	// passworded local connections.
+	// $conf['extra_login_security'] = true;
 	$conf['extra_login_security'] = false;
+
 
 	// Only show owned databases?
 	// Note: This will simply hide other databases in the list - this does
 	// not in any way prevent your users from seeing other database by
 	// other means. (e.g. Run 'SELECT * FROM pg_database' in the SQL area.)
 	// $conf['owned_only'] = false;
-  // 他の人のデータベースをいちいち一覧に表示しない
- 	$conf['owned_only'] = true;
+	// 他の人のデータベースをいちいち一覧に表示しない
+	$conf['owned_only'] = true;
 
 	// Display comments on objects?  Comments are a good way of documenting
 	// a database, but they do take up space in the interface.
@@ -135,6 +140,7 @@
 	$conf['theme'] = 'default';
 
 	// Show OIDs when browsing tables?
+	// Only supported in versions <=11
 	$conf['show_oids'] = false;
 
 	// Max rows to show on a page when browsing record sets

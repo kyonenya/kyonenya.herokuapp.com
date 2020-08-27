@@ -402,8 +402,8 @@
 		if (is_object($rs) && $rs->recordCount() > 0) {
 			/* we are browsing a referenced table here
 			 * we should show OID if show_oids is true
-			 * so we give true to withOid in functions bellow
-			 * as 3rd paramter */
+			 * so we give true to withOid in functions below
+			 * as 3rd parameter */
 		
 			echo "<table><tr>";
 				printTableHeaderCells($rs, false, true);
@@ -529,15 +529,15 @@
 		if (isset($_REQUEST['query'])) {
 			$query = $_REQUEST['query'];
 		} else {
-			$query = "SELECT * FROM {$_REQUEST['schema']}";
+			$query = "SELECT * FROM ".pg_escape_identifier($_REQUEST['schema']);
 			if ($_REQUEST['subject'] == 'view') {
-				$query = "{$query}.{$_REQUEST['view']};";
+				$query = "{$query}.".pg_escape_identifier($_REQUEST['view']).";";
 			} else {
-				$query = "{$query}.{$_REQUEST['table']};";
+				$query = "{$query}.".pg_escape_identifier($_REQUEST['table']).";";
 			}
 		}
 		//$query = isset($_REQUEST['query'])? $_REQUEST['query'] : "select * from {$_REQUEST['schema']}.{$_REQUEST['table']};";
-		echo $query;
+		echo htmlspecialchars($query);
 		echo '</textarea><br><input type="submit"/></form>';
 
 		if (is_object($rs) && $rs->recordCount() > 0) {

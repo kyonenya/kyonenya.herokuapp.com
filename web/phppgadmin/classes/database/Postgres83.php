@@ -17,7 +17,7 @@ class Postgres83 extends Postgres84 {
 	var $privlist = array(
   		'table' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
   		'view' => array('SELECT', 'INSERT', 'UPDATE', 'DELETE', 'REFERENCES', 'TRIGGER', 'ALL PRIVILEGES'),
-  		'sequence' => array('SELECT', 'UPDATE', 'ALL PRIVILEGES'),
+  		'sequence' => array('USAGE', 'SELECT', 'UPDATE', 'ALL PRIVILEGES'),
   		'database' => array('CREATE', 'TEMPORARY', 'CONNECT', 'ALL PRIVILEGES'),
   		'function' => array('EXECUTE', 'ALL PRIVILEGES'),
   		'language' => array('USAGE', 'ALL PRIVILEGES'),
@@ -45,8 +45,8 @@ class Postgres83 extends Postgres84 {
 	 * Constructor
 	 * @param $conn The database connection
 	 */
-	function Postgres83($conn) {
-		$this->Postgres($conn);
+	function __construct($conn) {
+		parent::__construct($conn);
 	}
 
 	// Help functions
@@ -56,7 +56,7 @@ class Postgres83 extends Postgres84 {
 		return $this->help_page;
 	}
 
-	// Databse functions
+	// Database functions
 
 	/**
 	 * Return all database available on the server
@@ -278,7 +278,7 @@ class Postgres83 extends Postgres84 {
 	 * @param $restartvalue The sequence current value
 	 * @param $cachevalue The sequence cache value
 	 * @param $cycledvalue Sequence can cycle ?
-	 * @param $startvalue The sequence start value when issueing a restart (ignored)
+	 * @param $startvalue The sequence start value when issuing a restart (ignored)
 	 * @return 0 success
 	 */
 	function alterSequenceProps($seqrs, $increment,	$minvalue, $maxvalue,

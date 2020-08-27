@@ -29,12 +29,10 @@ class Config
     'options' => [],
   ];
 
-  /**
-   * ApacheのRewriteRuleがオンかどうか
-   * （オンなら、URLがファイルの実体（例：index.php）と対応しなくなる。）
-   */  
+  // ApacheのRewriteEngineがオンかどうか
   public static function isRewriteEngineOn(): bool
   {
+    // DraftCode環境のみオフ
     if (self::isDraftCodeEnv()) {
       return false;
     } else {
@@ -44,8 +42,9 @@ class Config
   
   // DBの種類を取得（'postgres'または'sqlite'）
   public static function getDbType(): string
-  {    
+  {  
     if ($_ENV['DATABASE_URL']) {
+      // データベースURLからスキームを取得して返す
       return parse_url($_ENV['DATABASE_URL'])['scheme'];  // 'postgres'
     } else {
       return 'sqlite';
@@ -56,17 +55,14 @@ class Config
   public static function getDbConfig(): array
   {   
     if ($_ENV['DATABASE_URL']) {
-      return self::parseDbConfig($_ENV['DATABASE_URL']);
+      return self::convertDbConfig($_ENV['DATABASE_URL']);
     } else {
       return self::SQLITE_CONFIG;
     }
   }
 
-  /**
-   * DBの設定情報をURLを展開して生成
-   * Herokuの場合など、環境変数のデータベースURLから設定を生成するときに使う。
-   */
-  public static function parseDbConfig(string $dbUrl) :array
+  // データベースURLをPDO接続用の設定に変換
+  public static function convertDbConfig(string $dbUrl) :array
   {
     // データベースURLを展開
     $urls = parse_url($dbUrl);  // [scheme, host, port, user, pass, path]
@@ -82,13 +78,10 @@ class Config
     return ['dsn' => $dsn, 'user' => $user, 'pass' => $pass];
   }
   
+  // iPadアプリのDrafCodeが実行環境であるかどうか
   public static function isDraftCodeEnv(): bool
   {
     return $_SERVER['SERVER_SOFTWARE'] === 'DraftCode IDE Runtime';
   }
 
 }
-
-/*$_ENV['DATABASE_URL'] = 'postgres://zxehjkojxygwch:3b483c8c5a70f746ffdf7f08d600d41b6a5c59d1fb911ac7b2046a8592b9b63e@ec2-23-20-168-40.compute-1.amazonaws.com:5432/de9v5vgk53jcli';
-var_dump(Config::getDbType());
-var_dump(Config::getDbConfig());*/

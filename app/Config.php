@@ -28,17 +28,6 @@ class Config
     'pass' => '',
   ];
 
-  // ApacheのRewriteEngineがオンかどうか
-  public static function isRewriteEngineOn(): bool
-  {
-    // DraftCode環境のみオフ
-    if (self::isDraftCodeEnv()) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-  
   // DBの種類を取得（'postgres'または'sqlite'）
   public static function getDbType(): string
   {  
@@ -66,8 +55,7 @@ class Config
     // データベースURLを展開
     $urls = parse_url($dbUrl);  // [scheme, host, port, user, pass, path]
     
-    $dsn = sprintf('%s:host=%s;dbname=%s', 
-      $urls['scheme'],  // 'postgres'
+    $dsn = sprintf('pgsql:host=%s;dbname=%s',
       $urls['host'],  // 'ec2-(...).compute-1.amazonaws.com'
       ltrim($urls['path'], '/')  // データベース名
     );
@@ -77,7 +65,18 @@ class Config
     return ['dsn' => $dsn, 'user' => $user, 'pass' => $pass];
   }
   
-  // iPadアプリのDrafCodeが実行環境であるかどうか
+  // ApacheのRewriteEngineがオンかどうか
+  public static function isRewriteEngineOn(): bool
+  {
+    // DraftCode環境においてのみオフ
+    if (self::isDraftCodeEnv()) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  // 実行環境がiPadアプリのDrafCodeであるかどうか
   public static function isDraftCodeEnv(): bool
   {
     return $_SERVER['SERVER_SOFTWARE'] === 'DraftCode IDE Runtime';

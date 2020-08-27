@@ -6,21 +6,21 @@
  */
 abstract class Model
 {
-  protected $db;
+  protected $pdo;
   
   public function __construct()
   {
     // DBにまだ接続されていないならば、
-    if (!isset($this->db)) {
+    if (!isset($this->pdo)) {
       // 接続して接続情報を保持。
-      $this->db = $this->connectDb(Config::getDbConfig());
+      $this->pdo = $this->connectDb(Config::getDbConfig());
     }
   }
   
   // SQL文を安全に実行
   public function execute(string $sql, array $params = []): object
   {
-    $stmt = $this->db->prepare($sql);
+    $stmt = $this->pdo->prepare($sql);
     $stmt->execute($params);
     
     return $stmt;
@@ -41,10 +41,14 @@ abstract class Model
   // DB接続
   public function connectDb(array $config): object
   {    
-    $db = new PDO($config['dsn'], $config['user'], $config['pass']);
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
-    return $db;
+    try {
+      $pdo = new PDO($config['dsn'], $config['user'], $config['pass']);
+      $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e){
+      echo 'データベース接続エラー：' . $e->getMessage();
+      exit;
+    }
+    return $pdo;
   }
 
 }

@@ -24,7 +24,7 @@ class App
 
     try {
       if (!class_exists($routed['controller'])) {
-        throw new Exception();
+        throw new HttpNotFoundException('コントローラーが存在しません');
       } else {
         // TODO: いちいちnewせずfindControllerで見つけてくる
         $controller = new $routed['controller']($this->config);
@@ -34,8 +34,8 @@ class App
       
       $this->response->send($html);
       
-    } catch (Exception $e) {
-      echo '例外：404エラー';
+    } catch (HttpNotFoundException $e) {
+      $this->response->render404page($e);
     }
   }
   

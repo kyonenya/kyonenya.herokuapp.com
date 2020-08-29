@@ -5,7 +5,7 @@ class Config
   const ROUTE_DEFINITIONS = [
     '/' => [
       'controller' => 'PostController',
-      'action' => 'indexActions',
+      'action' => 'indexAction',
     ],
     '/articles/(?P<id>\d+)' => [
       'controller' => 'PostController',

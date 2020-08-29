@@ -16,8 +16,7 @@ abstract class Controller
   public function runAction(string $action, array $params = []): ?string
   {
     if (!method_exists($this, $action)) {
-      echo 'アクションが存在しません';
-      throw new Exception();
+      throw new HttpNotFoundException('アクションが存在しません');
     }
     
     $html = $this->$action($params);
@@ -28,7 +27,7 @@ abstract class Controller
   public function findModel(string $model): object
   {
     if (!class_exists($model)) {
-      echo 'クラスが存在しません';
+      throw new HttpNotFoundException('モデルが存在しません');
     }
     // まだモデルインスタンスが生成されていなければ新規作成して登録
     if (!isset($this->models[$model])) {

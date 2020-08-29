@@ -6,9 +6,9 @@
  */
 require '../bootstrap.php';
 
+$app = new App();
+$app->run();
+
 // デバッグ用
 echo '<pre>';
 echo '</pre>';
-
-$app = new App();
-$app->run();

@@ -24,3 +24,5 @@ $classLoader->register();
 require 'views/View.php';
 require 'app/functions.php';
 
+//  エラーを表示するかどうか
+// ini_set('display_errors', '0');

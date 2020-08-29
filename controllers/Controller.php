@@ -17,6 +17,7 @@ abstract class Controller
   {
     if (!method_exists($this, $action)) {
       echo 'アクションが存在しません';
+      throw new Exception();
     }
     
     $html = $this->$action($params);

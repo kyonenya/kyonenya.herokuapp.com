@@ -1,6 +1,6 @@
 <?php
 /**
- * class Controller
+ * Controllerクラス
  * 
  */
 abstract class Controller
@@ -29,8 +29,9 @@ abstract class Controller
     if (!class_exists($model)) {
       throw new HttpNotFoundException('モデルが存在しません');
     }
-    // まだモデルインスタンスが生成されていなければ新規作成して登録
+    // まだモデルインスタンスが生成されていなければ、
     if (!isset($this->models[$model])) {
+      // 新規作成して配列に登録。
       $this->models[$model] = new $model();
     }
     

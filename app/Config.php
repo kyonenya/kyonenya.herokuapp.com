@@ -43,14 +43,14 @@ class Config
   public static function getDbConfig(): array
   {   
     if ($_ENV['DATABASE_URL']) {
-      return self::convertDbConfig($_ENV['DATABASE_URL']);
+      return self::convertDbUrl($_ENV['DATABASE_URL']);
     } else {
       return self::SQLITE_CONFIG;
     }
   }
 
   // データベースURLをPDO接続用の設定に変換
-  public static function convertDbConfig(string $dbUrl) :array
+  public static function convertDbUrl(string $dbUrl) :array
   {
     // データベースURLを展開
     $urls = parse_url($dbUrl);  // [scheme, host, port, user, pass, path]
@@ -63,6 +63,23 @@ class Config
     $pass = $urls['pass'];
     
     return ['dsn' => $dsn, 'user' => $user, 'pass' => $pass];
+  }
+  
+  /**
+   * ベースURLを取得
+   * リクエストURIのうち、パス情報を除いた無意味な部分。
+   * プロジェクト全体で共通なので、RequestクラスではなくConfigクラスで保持。
+   * 例）'/index.php'
+   */
+  public static function getBaseUrl(): ?string
+  {
+    if (self::isRewriteEngineOn()) {
+      // ドキュメントルート直下にindex.phpを置く場合
+      return '';
+    } else {
+      // クエリ文字列でパス情報を代用する場合
+      return $_SERVER['SCRIPT_NAME'] . '?l=';  // '/index.php?l='
+    }
   }
   
   // ApacheのRewriteEngineがオンかどうか

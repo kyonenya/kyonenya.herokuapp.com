@@ -35,13 +35,7 @@ class Request
    */
   public function getBaseUrl(): ?string
   {
-    if (Config::isRewriteEngineOn()) {
-      // ドキュメントルート直下にindex.phpを置く場合
-      return '';
-    } else {
-      // クエリ文字列でパス情報を代用する場合
-      return $_SERVER['SCRIPT_NAME'] . '?l=';  // '/index.php?l='
-    }
+    return Config::getBaseUrl();
   }
   
   /**

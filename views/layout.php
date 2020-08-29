@@ -1,3 +1,9 @@
+<?php  
+  if (!Config::isRewriteEngineOn()) {
+    // 相対パス指定
+    $dot = '.'; 
+  }
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
@@ -5,11 +11,11 @@
   <title><?= $title ? $title . '｜' : '' ?>placet experiri</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- CSSインポート -->
-  <link href="/css/reset.css" media="all" rel="stylesheet" type="text/css" />
-  <link href="/css/style.css" media="all" rel="stylesheet" type="text/css" />
+  <link href="<?= $dot ?>/css/reset.css" media="all" rel="stylesheet" type="text/css" />
+  <link href="<?= $dot ?>/css/style.css" media="all" rel="stylesheet" type="text/css" />
   <!-- アイコン画像 -->
-  <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/img/apple-touch-icon-180x180.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192x192.png" />
+  <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="<?= $dot ?>/img/apple-touch-icon-180x180.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="<?= $dot ?>/img/icon-192x192.png" />
   <link rel="icon" href="favicon.ico" />
   <!-- 通常のメタデータ -->
   <meta name="description" content="言ってみただけ。哲学と哲学以外のことを書くテキストサイト" />
@@ -36,7 +42,7 @@
         <li><a href="<?= $baseUrl ?>/works">Works</a></li>
         <li><a href="<?= $baseUrl ?>/about">About</a></li>
         <li class="el_search">
-          <img src="/img/search.svg" class="el_search_icon" alt="検索アイコン" />
+          <img src="<?= $dot ?>/img/search.svg" class="el_search_icon" alt="検索アイコン" />
           <form>
             <input type="search" placeholder="検索ワードを入力" value="" class="el_search_form">
           </form>
@@ -56,6 +62,7 @@
   <div class="ly_footer_inner">
     <p class="el_footerCopyright">&copy; 2020- <a href="<?= $baseUrl ?>/about">placet experiri</a></p>
   </div>
+  <p></p>
 </footer>
 </body>
 </html>

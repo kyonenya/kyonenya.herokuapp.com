@@ -13,9 +13,6 @@ class View
     $this->viewDir = dirname(__FILE__);
   }
   
-  
-  // protected $base_dir = dirname(__FILE__);
-  
   public function render(string $viewName, array $variables = [], ?string $layoutName = null): string
   {
     $view = $this->viewDir . '/' . $viewName;
@@ -47,7 +44,6 @@ class View
     
     return $html;
   }
-
   
   // いつもの
   public function h(?string $string): ?string

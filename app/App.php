@@ -5,6 +5,7 @@
  */
 class App
 {
+  protected $controllers = ['test'];
   protected $request;
   protected $router;
   protected $response;
@@ -23,12 +24,7 @@ class App
     $routed = $this->router->resolve($pathInfo);
 
     try {
-      if (!class_exists($routed['controller'])) {
-        throw new HttpNotFoundException('コントローラーが存在しません');
-      } else {
-        // TODO: いちいちnewせずfindControllerで見つけてくる
-        $controller = new $routed['controller']($this->config);
-      }
+      $controller = $this->findController($routed['controller']);
       
       $html = $controller->runAction($routed['action'], $routed['params']);
       
@@ -37,6 +33,29 @@ class App
     } catch (HttpNotFoundException $e) {
       $this->response->render404page($e);
     }
+  }
+  
+  public function findController(string $controller): object
+  {
+    if (!class_exists($controller)) {
+      throw new HttpNotFoundException('コントローラーが存在しません');
+    } 
+    // ! デバッグ
+    echo '<pre>';
+    var_dump($this->controllers);
+    echo '/<pre>';
+    
+    // まだコントローラーインスタンスが生成されていなければ、
+    if (!isset($this->controllers[$controller])) {
+      // 新規作成して配列に登録。
+      $this->controllers[$controller] = new $controller;
+      // ! デバッグ
+      echo '<pre>';
+      var_dump($this->controllers);
+      echo '</pre>';
+    } 
+    
+    return $this->controllers[$controller];
   }
   
 }

@@ -27,7 +27,7 @@ class PostsModel extends Model
   {
     // 複数の記事タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
-      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags7
         FROM posts
         LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
@@ -60,11 +60,25 @@ class PostsModel extends Model
 
   public function fetchPost(int $id): array
   {
-    $sql = 'SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
-      FROM posts 
-      INNER JOIN tags
-        ON posts.id = tags.post_id
-          AND posts.id = :id';
+    $sql_sqlite = '
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
+        FROM posts 
+        INNER JOIN tags
+          ON posts.id = tags.post_id
+            AND posts.id = :id
+        GROUP BY posts.id';
+    
+    $sql_postgres = "
+      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
+        FROM posts 
+        INNER JOIN tags
+          ON posts.id = tags.post_id
+            AND posts.id = :id
+        GROUP BY posts.id";
+
+    $sql = (Config::getDbType() === 'postgres')
+      ? $sql_postgres
+      : $sql_sqlite;
     
     $post = $this->fetch($sql, [
       ':id' => $id,

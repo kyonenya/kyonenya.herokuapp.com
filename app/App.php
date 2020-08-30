@@ -5,7 +5,7 @@
  */
 class App
 {
-  protected $controllers = ['test'];
+  protected $controllers = [];
   protected $request;
   protected $router;
   protected $response;
@@ -39,20 +39,11 @@ class App
   {
     if (!class_exists($controller)) {
       throw new HttpNotFoundException('コントローラーが存在しません');
-    } 
-    // ! デバッグ
-    echo '<pre>';
-    var_dump($this->controllers);
-    echo '/<pre>';
-    
+    }    
     // まだコントローラーインスタンスが生成されていなければ、
     if (!isset($this->controllers[$controller])) {
       // 新規作成して配列に登録。
-      $this->controllers[$controller] = new $controller;
-      // ! デバッグ
-      echo '<pre>';
-      var_dump($this->controllers);
-      echo '</pre>';
+      $this->controllers[$controller] = new $controller();
     } 
     
     return $this->controllers[$controller];

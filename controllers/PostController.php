@@ -20,7 +20,6 @@ class PostController extends Controller
     $id = $params['id'];
     
     $post = $this->findModel('PostsModel')->fetchPost($id);
-    $post['tags'] = $this->findModel('TagsModel')->fetchTags($id);
     
     return $this->view->render('article.php', ['post' => $post], 'layout.php');
   }

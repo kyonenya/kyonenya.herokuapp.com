@@ -1,6 +1,6 @@
 <?php
 /**
- * Router
+ * Routerクラス
  *
  */
 class Router 

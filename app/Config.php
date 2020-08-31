@@ -11,6 +11,10 @@ class Config
       'controller' => 'PostController',
       'action' => 'articleAction',
     ],
+    '/posts/delete/(?P<id>\d+)' => [
+      'controller' => 'PostController',
+      'action' => 'deleteAction',
+    ],
     '/about' => [
       'controller' => 'PageController',
       'action' => 'aboutAction',

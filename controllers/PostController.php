@@ -5,7 +5,6 @@
  */
 class PostController extends Controller
 {
-  // protected $config;
   // protected $view;
   
   public function indexAction(): string
@@ -23,15 +22,14 @@ class PostController extends Controller
     
     return $this->view->render('article.php', ['post' => $post], 'layout.php');
   }
-  
-  public function aboutAction(): string
+
+  public function deleteAction(array $params): void
   {
-    return $this->view->render('about.php', [], 'layout.php');
-  }
-   
-  public function worksAction(): string
-  {
-    return $this->view->render('works.php', [], 'layout.php');
+    $id = $params['id'];
+    
+    $this->findModel('PostsModel')->deletePost($id);
+    
+    // TODO: リダイレクト
   }
 
 }

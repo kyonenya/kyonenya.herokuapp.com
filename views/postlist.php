@@ -6,7 +6,7 @@
           <?= $post['created_at']; ?>
         </time>
         <a href="edit.php?id=<?= $post['id']; ?>">[編集]</a>
-        <a href="delete.php?id=<?= $post['id']; ?>">[x]</a>
+        <a href="<?= $baseUrl ?>/posts/delete/<?= $post['id'] ?>">[x]</a>
       </header>
       <a href="<?= $baseUrl ?>/articles/<?= $post['id'] ?>">
         <h2 class="bl_posts_title">

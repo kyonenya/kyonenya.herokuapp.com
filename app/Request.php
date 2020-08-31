@@ -60,8 +60,25 @@ class Request
   // GETパラメータを取得
   public function getGet(string $name, string $default = null)
   {
-    return filter_input(INPUT_GET, $name) 
+    return (filter_input(INPUT_GET, $name))
       ?? $default;  // GETパラメータがnullの場合
+  }
+  
+  // POSTかどうか
+  public function isPost(): bool
+  {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  // POST内容を取得
+  public function getPost(string $name, ?string $default = null): string
+  {
+    return (filter_input(INPUT_POST, $name))
+      ?? $default;  // POST内容がnullの場合
   }
   
 }

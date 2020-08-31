@@ -7,9 +7,17 @@ class Config
       'controller' => 'PostController',
       'action' => 'indexAction',
     ],
-    '/articles/(?P<id>\d+)' => [
+    '/posts/(?P<id>\d+)' => [
       'controller' => 'PostController',
       'action' => 'articleAction',
+    ],
+    '/posts/create' => [
+      'controller' => 'PostController',
+      'action' => 'createAction',
+    ],
+    '/posts/store' => [
+      'controller' => 'PostController',
+      'action' => 'storeAction',
     ],
     '/posts/delete/(?P<id>\d+)' => [
       'controller' => 'PostController',

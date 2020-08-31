@@ -93,6 +93,18 @@ class PostsModel extends Model
     return $post;
   }
 
+  public function insertPost(?string $title, string $body): void
+  {
+    $sql = '
+      INSERT INTO posts
+        (title, body)
+      VALUES
+        (:title, :body)
+      ';
+    
+    $this->execute($sql, [':title' => $title, 'body' => $body]);
+  }
+  
   public function deletePost(int $id): void
   {
     // TODO トランザクション

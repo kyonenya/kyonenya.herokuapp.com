@@ -6,11 +6,13 @@
 abstract class Controller
 {
   public $models = [];
+  protected $request;
   protected $view;
   protected $response;  
 
   public function __construct()
   {
+    $this->request = new Request();
     $this->view = new View();
     $this->response = new Response();
   }

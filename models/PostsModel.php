@@ -65,18 +65,18 @@ class PostsModel extends Model
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
         FROM posts 
-        INNER JOIN tags
+        LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
-            AND posts.id = :id
+        WHERE posts.id = :id
         GROUP BY posts.id
       ';
     
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
         FROM posts 
-        INNER JOIN tags
+        LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
-            AND posts.id = :id
+        WHERE posts.id = :id
         GROUP BY posts.id
       ";
 

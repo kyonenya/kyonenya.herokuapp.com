@@ -38,9 +38,9 @@
     </h1>
     <nav class="bl_nav">
       <ul class="bl_nav_inner">
-        <li><a href="<?= $baseUrl ?>/">Home</a></li>
         <li><a href="<?= $baseUrl ?>/works">Works</a></li>
         <li><a href="<?= $baseUrl ?>/about">About</a></li>
+        <li><a href="<?= $baseUrl ?>/posts/create">Create</a></li>
         <li class="el_search">
           <img src="<?= $dot ?>/img/search.svg" class="el_search_icon" alt="検索アイコン" />
           <form>

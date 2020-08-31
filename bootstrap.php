@@ -21,8 +21,10 @@ $classLoader->registerDir(dirname(__FILE__) . '/controllers');
 $classLoader->register();
 
 // 手動ロード
+require 'Config.php';
 require 'views/View.php';
 require 'app/functions.php';
+
 
 //  エラーを表示するかどうか
 // ini_set('display_errors', '0');

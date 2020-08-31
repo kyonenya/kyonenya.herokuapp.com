@@ -27,12 +27,13 @@ class PostsModel extends Model
   {
     // 複数の記事タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
-      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags7
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
         FROM posts
         LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
           GROUP BY posts.id
-        ORDER BY id DESC';
+        ORDER BY id DESC
+      ';
 
     // PostgreSQLではSTRING_AGGを使う
     $sql_postgres = "
@@ -41,7 +42,8 @@ class PostsModel extends Model
         LEFT OUTER JOIN tags
           ON posts.id = tags.post_id
           GROUP BY posts.id
-        ORDER BY id DESC";
+        ORDER BY id DESC
+      ";
     
     // DBごとにスイッチ
     $sql = (Config::getDbType() === 'postgres')
@@ -54,7 +56,7 @@ class PostsModel extends Model
     foreach ($posts as &$post) {
         $post['tags'] = explode(',', $post['tags']);
     }
-    
+
     return $posts;
   }
 
@@ -66,7 +68,8 @@ class PostsModel extends Model
         INNER JOIN tags
           ON posts.id = tags.post_id
             AND posts.id = :id
-        GROUP BY posts.id';
+        GROUP BY posts.id
+      ';
     
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
@@ -74,7 +77,8 @@ class PostsModel extends Model
         INNER JOIN tags
           ON posts.id = tags.post_id
             AND posts.id = :id
-        GROUP BY posts.id";
+        GROUP BY posts.id
+      ";
 
     $sql = (Config::getDbType() === 'postgres')
       ? $sql_postgres
@@ -87,6 +91,37 @@ class PostsModel extends Model
     $post['tags'] = explode(',', $post['tags']);
     
     return $post;
+  }
+
+  public function insertPost(?string $title, string $body): void
+  {
+    $sql = '
+      INSERT INTO posts
+        (title, body)
+      VALUES
+        (:title, :body)
+      ';
+    
+    $this->execute($sql, [':title' => $title, 'body' => $body]);
+  }
+  
+  public function deletePost(int $id): void
+  {
+    // TODO トランザクション
+    $sql_posts = '
+      DELETE 
+        FROM posts
+        WHERE id = :id      
+      ';
+      
+    $sql_tags = '
+      DELETE 
+        FROM tags 
+        WHERE post_id = :id
+      ';
+    
+    $this->execute($sql_posts, [':id' => $id]);
+    $this->execute($sql_tags, [':id' => $id]);
   }
   
 }

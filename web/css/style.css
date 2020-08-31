@@ -490,7 +490,29 @@ li:last-child {
 	padding-right: 0.3em;
 	list-style: none;	/* offset */
 }
-
+/* エディター */
+.bl_editor {
+  font-size: 90%;
+}
+.bl_editor_title {
+  width: 97%;
+  border: none;
+  background: hsl(40, 38%, 97%);
+  margin: 0 auto 0.25em;
+}
+.bl_editor_title:focus {
+  outline: none;
+}
+.bl_editor_body {
+  width: 97%;
+  height: 60vh;
+  border: none;
+  background: hsl(40, 38%, 97%);
+  margin: 0 auto;
+}
+.bl_editor_body:focus {
+  outline: none;
+}
 
 /* -----------------------------------------
 	スマホ */

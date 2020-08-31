@@ -6,6 +6,7 @@
 class PostController extends Controller
 {
   // protected $view;
+  // protected $response;
   
   public function indexAction(): string
   {
@@ -26,10 +27,9 @@ class PostController extends Controller
   public function deleteAction(array $params): void
   {
     $id = $params['id'];
-    
     $this->findModel('PostsModel')->deletePost($id);
-    
-    // TODO: リダイレクト
+    // 削除完了後、トップページに遷移
+    $this->response->redirect(Config::getBaseUrl() . '/');
   }
 
 }

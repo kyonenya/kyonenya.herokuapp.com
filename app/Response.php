@@ -10,12 +10,20 @@ class Response
   public function send(?string $html): void
   {
     http_response_code($statusCode);
+    
     if (isset($html)) {
       echo $html;
     }
   }
   
-  public function render404page($e)
+  public function redirect(string $url): void
+  {
+    http_response_code(302);  // 'found'
+    header('Location: ' . $url);
+    exit;
+  }
+  
+  public function render404page($e):void
   {
     http_response_code(404);  // 'Not Found'
     echo $e->getMessage();

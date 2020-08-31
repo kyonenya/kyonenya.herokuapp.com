@@ -7,10 +7,12 @@ abstract class Controller
 {
   public $models = [];
   protected $view;
+  protected $response;  
 
   public function __construct()
   {
     $this->view = new View();
+    $this->response = new Response();
   }
   
   public function runAction(string $action, array $params = []): ?string

@@ -28,7 +28,7 @@ class App
     try {
       $controller = $this->findController($routed['controller']);
       
-      $html = $controller->runAction($routed['action'], $routed['params']);
+      $html = $controller->runAction($routed['action'], $routed['captured']);
       
       $this->response->send($html);
       

@@ -15,9 +15,9 @@ class PostController extends Controller
     return $this->view->render('postlist.php', ['posts' => $posts], 'layout.php');
   }
   
-  public function articleAction(array $params): string
+  public function articleAction(array $captured): string
   {
-    $id = $params['id'];
+    $id = $captured['id'];
     
     $post = $this->findModel('PostsModel')->fetchPost($id);
     
@@ -46,14 +46,14 @@ class PostController extends Controller
     $this->response->redirect(Config::getBaseUrl() . '/');
   }
   
-  public function updateAction(array $params): void
+  public function updateAction(array $captured): void
   {
     // $id = $params['id']
   }
   
-  public function deleteAction(array $params): void
+  public function deleteAction(array $captured): void
   {
-    $id = $params['id'];
+    $id = $captured['id'];
     $this->findModel('PostsModel')->deletePost($id);
     // 削除完了後、トップページに遷移
     $this->response->redirect(Config::getBaseUrl() . '/');

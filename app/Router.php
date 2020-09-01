@@ -19,11 +19,11 @@ class Router
       $pattern = '#^' . $path . '$#';
       if (preg_match($pattern, $pathInfo, $matches)) {
         // 名前付きマッチング以外の値を削除
-        $params = array_filter($matches, function($value, $key) {
+        $captured = array_filter($matches, function($value, $key) {
           return !is_int($key);
         }, ARRAY_FILTER_USE_BOTH);
         
-        return array_merge($routed, ['params' => $params]);
+        return array_merge($routed, ['captured' => $captured]);
       }
     }
   }

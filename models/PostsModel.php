@@ -8,7 +8,7 @@ class PostsModel extends Model
   public function getPostlist() {
     $posts = $this->fetchAllPosts();
     
-    $postlist = array_map(function ($post) {
+    return array_map(function ($post) {
       $created_datetime = new DateTime($post['created_at']);
       $created_at = $created_datetime->format('Y-m-d');
       return [
@@ -19,29 +19,27 @@ class PostsModel extends Model
         'tags' => $post['tags'],
       ];
     }, $posts);
-    
-    return $postlist;
   }
 
   public function fetchAllPosts(): array
   {
     // 複数の記事タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
-      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tagcsv
       FROM posts
       LEFT OUTER JOIN tags
         ON posts.id = tags.post_id
-        GROUP BY posts.id
+      GROUP BY posts.id
       ORDER BY id DESC
       ';
 
     // PostgreSQLではSTRING_AGGを使う
     $sql_postgres = "
-      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
+      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tagcsv
       FROM posts
       LEFT OUTER JOIN tags
         ON posts.id = tags.post_id
-        GROUP BY posts.id
+      GROUP BY posts.id
       ORDER BY id DESC
       ";
     
@@ -53,17 +51,16 @@ class PostsModel extends Model
     $posts = $this->fetchAll($sql);
     
     // カンマ区切りで取得したタグを配列に展開しておく
-    foreach ($posts as &$post) {
-        $post['tags'] = explode(',', $post['tags']);
-    }
-
-    return $posts;
+    return array_map(function($post) {
+      $post['tags'] = explode(',', $post['tagcsv']);
+      return array_merge($post, $post['tags']);
+    }, $posts);
   }
 
   public function fetchPost(int $id): array
   {
     $sql_sqlite = '
-      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tagcsv
       FROM posts 
       LEFT OUTER JOIN tags
         ON posts.id = tags.post_id
@@ -72,7 +69,7 @@ class PostsModel extends Model
       ';
     
     $sql_postgres = "
-      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
+      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tagcsv
       FROM posts 
       LEFT OUTER JOIN tags
         ON posts.id = tags.post_id
@@ -88,7 +85,7 @@ class PostsModel extends Model
       ':id' => $id,
     ]);
     
-    $post['tags'] = explode(',', $post['tags']);
+    $post['tags'] = explode(',', $post['tagcsv']);
     
     return $post;
   }
@@ -101,19 +98,19 @@ class PostsModel extends Model
       VALUES
         (:title, :body)
       ';
-    $this->execute($sql_posts, [':title' => $title, ':body' => $body]);
-
-    // 今しがた挿入した記事のidを取得
-    $post_id = $this->getLastInsertedId();
-  
-    // タグを挿入
+    
     $sql_tags = '
       INSERT INTO tags
         (post_id, tag)
       VALUES
         (:post_id, :tag)
-      ';
+          ';
     
+    // 記事を挿入
+    $this->execute($sql_posts, [':title' => $title, ':body' => $body]);
+    // 挿入した記事のidを取得
+    $post_id = $this->getLastInsertedId();
+    // タグを挿入
     $stmt = $this->pdo->prepare($sql_tags);
     
     $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
@@ -121,23 +118,6 @@ class PostsModel extends Model
       $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
       $stmt->execute();
     }
-
-/*    $sql_tags = '
-      INSERT INTO tags
-        (post_id, tag)
-          VALUES';
-    
-    $values = array_map(function ($tag) use($post_id) {
-      return "($post_id, '$tag')";
-    }, $tags);
-    // $sql_tags_values = mb_substr(implode(',', $values), 0, -1);
-    $sql_tags_values = implode(',', $values);
-    $sql_tags = '
-      INSERT INTO tags
-        (post_id, tag)
-      VALUES' . $sql_tags_values;*/
-    
-    //$this->execute($sql_tags);
   }
   
   public function deletePost(int $id): void

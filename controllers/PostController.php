@@ -38,9 +38,17 @@ class PostController extends Controller
     // POST内容を取得してinsert文を実行
     $title = $this->request->getPost('title', '');
     $body = $this->request->getPost('body');
-    $this->findModel('PostsModel')->insertPost($title, $body);
+    $taglist = $this->request->getPost('taglist');
+    $tags = explode(',', $taglist);
+    
+    $this->findModel('PostsModel')->insertPost($title, $body, $tags);
     
     $this->response->redirect(Config::getBaseUrl() . '/');
+  }
+  
+  public function updateAction(array $params): void
+  {
+    // $id = $params['id']
   }
   
   public function deleteAction(array $params): void

@@ -20,10 +20,13 @@ abstract class Model
   // SQL文を安全に実行
   public function execute(string $sql, array $params = []): object
   {
-    $stmt = $this->pdo->prepare($sql);
-    $stmt->execute($params);
-    
-    return $stmt;
+    try {
+      $stmt = $this->pdo->prepare($sql);
+      $stmt->execute($params);
+      return $stmt;
+    } catch (PDOException $e) {
+      echo $e;
+    }    
   }
   
   // 1件抽出
@@ -37,7 +40,13 @@ abstract class Model
   {
     return $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
   }
- 
+
+  // 
+  public function getLastInsertedId()
+  {
+    return $this->pdo->lastInsertId();
+  }
+  
   // DB接続
   public function connectDb(array $config): object
   {    

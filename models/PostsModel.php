@@ -28,21 +28,21 @@ class PostsModel extends Model
     // 複数の記事タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
-        FROM posts
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-          GROUP BY posts.id
-        ORDER BY id DESC
+      FROM posts
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+        GROUP BY posts.id
+      ORDER BY id DESC
       ';
 
     // PostgreSQLではSTRING_AGGを使う
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
-        FROM posts
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-          GROUP BY posts.id
-        ORDER BY id DESC
+      FROM posts
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+        GROUP BY posts.id
+      ORDER BY id DESC
       ";
     
     // DBごとにスイッチ
@@ -64,20 +64,20 @@ class PostsModel extends Model
   {
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
-        FROM posts 
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-        WHERE posts.id = :id
-        GROUP BY posts.id
+      FROM posts 
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+      WHERE posts.id = :id
+      GROUP BY posts.id
       ';
     
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
-        FROM posts 
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-        WHERE posts.id = :id
-        GROUP BY posts.id
+      FROM posts 
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+      WHERE posts.id = :id
+      GROUP BY posts.id
       ";
 
     $sql = (Config::getDbType() === 'postgres')
@@ -93,16 +93,35 @@ class PostsModel extends Model
     return $post;
   }
 
-  public function insertPost(?string $title, string $body): void
+  public function insertPost(?string $title, string $body, array $tags): void
   {
-    $sql = '
+    $sql_posts = '
       INSERT INTO posts
         (title, body)
       VALUES
         (:title, :body)
       ';
+    $this->execute($sql_posts, [':title' => $title, ':body' => $body]);
+
+    // 今しがた挿入した記事のidを取得
+    $post_id = $this->getLastInsertedId();
     
-    $this->execute($sql, [':title' => $title, 'body' => $body]);
+    $sql_tags = '
+      INSERT INTO tags
+        (post_id, tag)
+          VALUES';
+    
+    $values = array_map(function ($tag) use($post_id) {
+      return "($post_id, '$tag')";
+    }, $tags);
+    // $sql_tags_values = mb_substr(implode(',', $values), 0, -1);
+    $sql_tags_values = implode(',', $values);
+    $sql_tags = '
+      INSERT INTO tags
+        (post_id, tag)
+      VALUES' . $sql_tags_values;
+    
+    $this->execute($sql_tags);
   }
   
   public function deletePost(int $id): void

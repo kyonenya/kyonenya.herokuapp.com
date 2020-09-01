@@ -1,19 +1,16 @@
 <?php
 /**
- *
+ * Responseクラス
  *
  */
 class Response 
 {
-  protected $statusCode = 200;  // 'OK' 
+  // protected $statusCode = 200;  // 'OK' 
   
   public function send(?string $html): void
   {
-    http_response_code($statusCode);
-    
-    if (isset($html)) {
-      echo $html;
-    }
+    http_response_code(200);  // 'OK'
+    echo $html;
   }
   
   public function redirect(string $url): void

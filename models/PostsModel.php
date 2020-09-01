@@ -105,8 +105,24 @@ class PostsModel extends Model
 
     // 今しがた挿入した記事のidを取得
     $post_id = $this->getLastInsertedId();
-    
+  
+    // タグを挿入
     $sql_tags = '
+      INSERT INTO tags
+        (post_id, tag)
+      VALUES
+        (:post_id, :tag)
+      ';
+    
+    $stmt = $this->pdo->prepare($sql_tags);
+    
+    $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
+    foreach ($tags as $tag) {
+      $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
+      $stmt->execute();
+    }
+
+/*    $sql_tags = '
       INSERT INTO tags
         (post_id, tag)
           VALUES';
@@ -119,9 +135,9 @@ class PostsModel extends Model
     $sql_tags = '
       INSERT INTO tags
         (post_id, tag)
-      VALUES' . $sql_tags_values;
+      VALUES' . $sql_tags_values;*/
     
-    $this->execute($sql_tags);
+    //$this->execute($sql_tags);
   }
   
   public function deletePost(int $id): void

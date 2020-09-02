@@ -1,8 +1,7 @@
 <?php  
-  if (!Config::isRewriteEngineOn()) {
-    // 相対パス指定
-    $dot = '.'; 
-  }
+  $dot = (Config::isRewriteEngineOn() === false)
+    ? '.'  // 相対パス指定
+    : '';
 ?>
 <!DOCTYPE html>
 <html lang="ja">

@@ -7,9 +7,9 @@ class PostsModel extends Model
 {
   public function getPostlist() {
     $posts = $this->fetchAllPosts();
-    
-    $postlist = array_map(function ($post) {
-      $created_datetime = new DateTime($post['created_at']);
+
+    return array_map(function ($post) {
+      $created_datetime = new DateTimeImmutable($post['created_at']);
       $created_at = $created_datetime->format('Y-m-d');
       return [
         'id' => $post['id'],
@@ -17,32 +17,31 @@ class PostsModel extends Model
         'body' => mb_substr(strip_tags($post['body']), 0, 110),
         'created_at' => $created_at,
         'tags' => $post['tags'],
+        'dateago' => DateModel::getDateAgo($post['created_at']),
       ];
     }, $posts);
-    
-    return $postlist;
   }
 
   public function fetchAllPosts(): array
   {
     // 複数の記事タグの結合にGROUP_CONCATを使う
     $sql_sqlite = '
-      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
-        FROM posts
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-          GROUP BY posts.id
-        ORDER BY id DESC
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tagcsv
+      FROM posts
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+      GROUP BY posts.id
+      ORDER BY id DESC
       ';
 
     // PostgreSQLではSTRING_AGGを使う
     $sql_postgres = "
-      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
-        FROM posts
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-          GROUP BY posts.id
-        ORDER BY id DESC
+      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tagcsv
+      FROM posts
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+      GROUP BY posts.id
+      ORDER BY id DESC
       ";
     
     // DBごとにスイッチ
@@ -53,31 +52,30 @@ class PostsModel extends Model
     $posts = $this->fetchAll($sql);
     
     // カンマ区切りで取得したタグを配列に展開しておく
-    foreach ($posts as &$post) {
-        $post['tags'] = explode(',', $post['tags']);
-    }
-
-    return $posts;
+    return array_map(function($post) {
+      $post['tags'] = explode(',', $post['tagcsv']);
+      return array_merge($post, $post['tags']);
+    }, $posts);
   }
 
   public function fetchPost(int $id): array
   {
     $sql_sqlite = '
-      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tags
-        FROM posts 
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-        WHERE posts.id = :id
-        GROUP BY posts.id
+      SELECT posts.*, GROUP_CONCAT(tags.tag) AS tagcsv
+      FROM posts 
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+      WHERE posts.id = :id
+      GROUP BY posts.id
       ';
     
     $sql_postgres = "
-      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tags
-        FROM posts 
-        LEFT OUTER JOIN tags
-          ON posts.id = tags.post_id
-        WHERE posts.id = :id
-        GROUP BY posts.id
+      SELECT posts.*, STRING_AGG(tags.tag, ',') AS tagcsv
+      FROM posts 
+      LEFT OUTER JOIN tags
+        ON posts.id = tags.post_id
+      WHERE posts.id = :id
+      GROUP BY posts.id
       ";
 
     $sql = (Config::getDbType() === 'postgres')
@@ -88,21 +86,44 @@ class PostsModel extends Model
       ':id' => $id,
     ]);
     
-    $post['tags'] = explode(',', $post['tags']);
+    $post['tags'] = explode(',', $post['tagcsv']);
     
     return $post;
   }
 
-  public function insertPost(?string $title, string $body): void
+  public function insertPost(?string $title, string $body, array $tags): void
   {
-    $sql = '
+    $sql_posts = '
       INSERT INTO posts
-        (title, body)
+        (title, body, created_at, modified_at)
       VALUES
-        (:title, :body)
+        (:title, :body, :created_at, :modified_at)
       ';
     
-    $this->execute($sql, [':title' => $title, 'body' => $body]);
+    $sql_tags = '
+      INSERT INTO tags
+        (post_id, tag)
+      VALUES
+        (:post_id, :tag)
+          ';
+
+    $now = new DateTimeImmutable('now');    
+    $created_at = $now->format('Y-m-d H:i:s');
+    $modified_at = $now->format('Y-m-d H:i:s');
+    
+    // 記事を挿入
+    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]);
+
+    // 挿入した記事のidを取得
+    $post_id = $this->getLastInsertedId();
+    // タグを挿入
+    $stmt = $this->pdo->prepare($sql_tags);
+    
+    $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
+    foreach ($tags as $tag) {
+      $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
+      $stmt->execute();
+    }
   }
   
   public function deletePost(int $id): void

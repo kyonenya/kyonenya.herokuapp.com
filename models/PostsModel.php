@@ -7,9 +7,9 @@ class PostsModel extends Model
 {
   public function getPostlist() {
     $posts = $this->fetchAllPosts();
-    
+
     return array_map(function ($post) {
-      $created_datetime = new DateTime($post['created_at']);
+      $created_datetime = new DateTimeImmutable($post['created_at']);
       $created_at = $created_datetime->format('Y-m-d');
       return [
         'id' => $post['id'],
@@ -17,8 +17,43 @@ class PostsModel extends Model
         'body' => mb_substr(strip_tags($post['body']), 0, 110),
         'created_at' => $created_at,
         'tags' => $post['tags'],
+        'dateago' => self::getDateAgo($post['created_at']),
       ];
     }, $posts);
+  }
+
+  public function getDateAgo($time)
+  {
+    $date = new DateTime($time);
+    $now = new DateTime('now');
+    
+    $diff = $now->getTimestamp() - $date->getTimestamp();
+    
+    if ($diff < 60) {
+        $time   = $diff;
+        $unit   = "秒前";
+    }
+    elseif ($diff < 3600) {
+        $time   = $diff/60;
+        $unit   = "分前";
+    }
+    elseif ($diff < 86400) {
+        $time   = $diff/3600;
+        $unit   = "時間前";
+    }
+    elseif ($diff < 2764800) {
+        $time   = $diff/86400;
+        $unit   = "日前";
+    } 
+    elseif ($diff < 2764800 * 12) {
+        $time   = $diff/2764800;
+        $unit   = "ヶ月前";
+    } 
+    else {
+        $time = ($diff/2764800) / 12;
+        $unit = '年前';
+    }
+    return (int)$time . $unit;
   }
 
   public function fetchAllPosts(): array

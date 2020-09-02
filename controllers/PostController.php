@@ -39,7 +39,7 @@ class PostController extends Controller
     $title = $this->request->getPost('title', '');
     $body = $this->request->getPost('body');
     $taglist = $this->request->getPost('taglist');
-    $tags = explode(',', $taglist);
+    $tags = explode(' ', $taglist);
     
     $this->findModel('PostsModel')->insertPost($title, $body, $tags);
     

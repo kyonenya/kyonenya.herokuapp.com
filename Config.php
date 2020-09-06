@@ -19,6 +19,14 @@ class Config
       'controller' => 'PostController',
       'action' => 'storeAction',
     ],
+    '/posts/edit/(?P<id>\d+)' => [
+      'controller' => 'PostController',
+      'action' => 'editAction',
+    ],
+    '/posts/update/(?P<id>\d+)' => [
+      'controller' => 'PostController',
+      'action' => 'updateAction',
+    ],
     '/posts/delete/(?P<id>\d+)' => [
       'controller' => 'PostController',
       'action' => 'deleteAction',

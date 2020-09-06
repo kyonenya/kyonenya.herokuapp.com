@@ -105,25 +105,35 @@ class PostsModel extends Model
         (post_id, tag)
       VALUES
         (:post_id, :tag)
-          ';
+      ';
 
-    $now = new DateTimeImmutable('now');    
-    $created_at = $now->format('Y-m-d H:i:s');
-    $modified_at = $now->format('Y-m-d H:i:s');
+    $created_at = $modified_at = DateModel::getCurrentTime();
     
     // 記事を挿入
     $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]);
-
     // 挿入した記事のidを取得
     $post_id = $this->getLastInsertedId();
+
     // タグを挿入
-    $stmt = $this->pdo->prepare($sql_tags);
-    
+    $stmt = $this->pdo->prepare($sql_tags); 
     $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
     foreach ($tags as $tag) {
       $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
       $stmt->execute();
     }
+  }
+  
+  public function updatePost(int $id, ?string $title, string $body, array $tags): void
+  {
+    $sql_post = '
+      UPDATE posts
+      SET title = :title, body = :body, modified_at = :modified_at
+      WHERE id = :id
+      ';
+    
+    $modified_at = DateModel::getCurrentTime();
+    
+    $this->execute($sql_post, [':id' => $id, ':title' => $title, ':body' => $body, ':modified_at' => $modified_at]);
   }
   
   public function deletePost(int $id): void

@@ -5,7 +5,7 @@
         <time class="bl_posts_date" datetime="<?= $post['created_at']; ?>">
           <?= $post['created_at']; ?>
         </time>
-        <a href="edit.php?id=<?= $post['id']; ?>">[編集]</a>
+        <a href="<?= $baseUrl ?>/posts/edit/<?= $post['id']; ?>">[編集]</a>
         <a href="<?= $baseUrl ?>/posts/delete/<?= $post['id'] ?>">[x]</a>
       </header>
       <a href="<?= $baseUrl ?>/posts/<?= $post['id'] ?>">

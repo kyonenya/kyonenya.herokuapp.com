@@ -26,34 +26,58 @@ class PostController extends Controller
   
   public function createAction(): string
   {
-    return $this->view->render('create.php', [], 'layout.php');
+    return $this->view->render('editor.php', [], 'layout.php');
   }
 
   public function storeAction(): void
   {
-    // POST以外のアクセスを弾く    
+    // POST以外のアクセスを弾く
     if ($this->request->isPost() === false) {
       throw new HttpNotFoundException('不正なアクセスです');
     }
     // POST内容を取得してinsert文を実行
     $title = $this->request->getPost('title', '');
     $body = $this->request->getPost('body');
-    $taglist = $this->request->getPost('taglist');
+    $taglist = $this->request->getPost('tagcsv');
     $tags = explode(' ', $taglist);
     
     $this->findModel('PostsModel')->insertPost($title, $body, $tags);
     
     $this->response->redirect(Config::getBaseUrl() . '/');
   }
+
+  public function editAction(array $captured): string
+  {
+    $id = $captured['id'];
+    
+    $post = $this->findModel('PostsModel')->fetchPost($id);
+    $post['tagcsv'] = implode(' ', $post['tags']);
+    
+    return $this->view->render('editor.php', ['post' => $post], 'layout.php');
+  }
   
   public function updateAction(array $captured): void
   {
-    // $id = $params['id']
+    $id = $captured['id'];
+    
+    if ($this->request->isPost() === false) {
+      throw new HttpNotFoundException('不正なアクセスです');
+    }
+    // POST内容を取得してinsert文を実行
+    $title = $this->request->getPost('title', '');
+    $body = $this->request->getPost('body');
+    $taglist = $this->request->getPost('tagcsv');
+    $tags = explode(' ', $taglist);
+    
+    $this->findModel('PostsModel')->updatePost($id, $title, $body, $tags);
+
+    $this->response->redirect(Config::getBaseUrl() . '/');
   }
   
   public function deleteAction(array $captured): void
   {
     $id = $captured['id'];
+    
     $this->findModel('PostsModel')->deletePost($id);
     // 削除完了後、トップページに遷移
     $this->response->redirect(Config::getBaseUrl() . '/');

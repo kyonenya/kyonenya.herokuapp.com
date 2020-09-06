@@ -9,13 +9,13 @@ class PostsModel extends Model
     $posts = $this->fetchAllPosts();
 
     return array_map(function ($post) {
-      $created_datetime = new DateTimeImmutable($post['created_at']);
-      $created_at = $created_datetime->format('Y-m-d');
+      // $created_datetime = new DateTimeImmutable($post['created_at']);
+      // $created_at = $created_datetime->format('Y-m-d'); 
       return [
         'id' => $post['id'],
         'title' => $post['title'],
         'body' => mb_substr(strip_tags($post['body']), 0, 110),
-        'created_at' => $created_at,
+        'created_at' => DateModel::formatYmd($post['created_at']),
         'tags' => $post['tags'],
         'dateago' => DateModel::getDateAgo($post['created_at']),
       ];
@@ -111,6 +111,7 @@ class PostsModel extends Model
     
     // 記事を挿入
     $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]);
+    
     // 挿入した記事のidを取得
     $post_id = $this->getLastInsertedId();
 

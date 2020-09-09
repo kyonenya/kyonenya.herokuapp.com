@@ -1,7 +1,7 @@
 <?php
 /**
- * PostsModel.php
- * postsテーブル（ならびにtagsテーブル）を操作
+ * Postsモデル
+ * postsテーブルならびにtagsテーブルのCRUD処理
  */
 class PostsModel extends Model 
 {
@@ -9,13 +9,11 @@ class PostsModel extends Model
     $posts = $this->fetchAllPosts();
 
     return array_map(function ($post) {
-      $created_datetime = new DateTimeImmutable($post['created_at']);
-      $created_at = $created_datetime->format('Y-m-d');
       return [
         'id' => $post['id'],
         'title' => $post['title'],
         'body' => mb_substr(strip_tags($post['body']), 0, 110),
-        'created_at' => $created_at,
+        'created_at' => DateModel::formatYmd($post['created_at']),
         'tags' => $post['tags'],
         'dateago' => DateModel::getDateAgo($post['created_at']),
       ];
@@ -28,8 +26,8 @@ class PostsModel extends Model
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tagcsv
       FROM posts
-      LEFT OUTER JOIN tags
-        ON posts.id = tags.post_id
+        LEFT OUTER JOIN tags
+          ON posts.id = tags.post_id
       GROUP BY posts.id
       ORDER BY id DESC
       ';
@@ -38,8 +36,8 @@ class PostsModel extends Model
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tagcsv
       FROM posts
-      LEFT OUTER JOIN tags
-        ON posts.id = tags.post_id
+        LEFT OUTER JOIN tags
+          ON posts.id = tags.post_id
       GROUP BY posts.id
       ORDER BY id DESC
       ";
@@ -63,8 +61,8 @@ class PostsModel extends Model
     $sql_sqlite = '
       SELECT posts.*, GROUP_CONCAT(tags.tag) AS tagcsv
       FROM posts 
-      LEFT OUTER JOIN tags
-        ON posts.id = tags.post_id
+        LEFT OUTER JOIN tags
+          ON posts.id = tags.post_id
       WHERE posts.id = :id
       GROUP BY posts.id
       ';
@@ -72,8 +70,8 @@ class PostsModel extends Model
     $sql_postgres = "
       SELECT posts.*, STRING_AGG(tags.tag, ',') AS tagcsv
       FROM posts 
-      LEFT OUTER JOIN tags
-        ON posts.id = tags.post_id
+        LEFT OUTER JOIN tags
+          ON posts.id = tags.post_id
       WHERE posts.id = :id
       GROUP BY posts.id
       ";
@@ -99,27 +97,53 @@ class PostsModel extends Model
       VALUES
         (:title, :body, :created_at, :modified_at)
       ';
+
+    $created_at = $modified_at = DateModel::getCurrentTime();
+
+    $this->pdo->beginTransaction();    
+    // 記事を挿入
+    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]); 
+    // 挿入した記事のidを取得
+    $post_id = $this->getLastInsertedId();
+    // タグを挿入
+    $this->insertTags($post_id, $tags);
     
+    $this->pdo->commit();
+  }
+  
+  public function updatePost(int $id, ?string $title, string $body, array $tags): void
+  {
+    $sql_posts = '
+      UPDATE posts
+      SET title = :title, body = :body, modified_at = :modified_at
+      WHERE id = :id
+      ';
+    
+    $modified_at = DateModel::getCurrentTime();
+    
+    $this->pdo->beginTransaction();
+    $this->execute($sql_posts, [':id' => $id, ':title' => $title, ':body' => $body, ':modified_at' => $modified_at]);
+    
+    // タグの更新＝全削除して全追加
+    $this->deleteTags($id);
+    $this->insertTags($id, $tags);
+    
+    $this->pdo->commit();
+  }
+  
+  public function insertTags(int $id, array $tags): void
+  {
     $sql_tags = '
       INSERT INTO tags
         (post_id, tag)
       VALUES
         (:post_id, :tag)
-          ';
-
-    $now = new DateTimeImmutable('now');    
-    $created_at = $now->format('Y-m-d H:i:s');
-    $modified_at = $now->format('Y-m-d H:i:s');
+    ';
     
-    // 記事を挿入
-    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]);
-
-    // 挿入した記事のidを取得
-    $post_id = $this->getLastInsertedId();
-    // タグを挿入
     $stmt = $this->pdo->prepare($sql_tags);
     
-    $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
+    $stmt->bindValue(':post_id', $id, PDO::PARAM_INT);
+    
     foreach ($tags as $tag) {
       $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
       $stmt->execute();
@@ -128,21 +152,27 @@ class PostsModel extends Model
   
   public function deletePost(int $id): void
   {
-    // TODO トランザクション
     $sql_posts = '
       DELETE 
-        FROM posts
-        WHERE id = :id      
+      FROM posts
+      WHERE id = :id      
       ';
-      
+  
+    $this->pdo->beginTransaction();
+    $this->execute($sql_posts, [':id' => $id]);
+    $this->deleteTags($id);
+    
+    $this->pdo->commit();
+  }
+
+  public function deleteTags(int $id): void
+  {
     $sql_tags = '
       DELETE 
-        FROM tags 
-        WHERE post_id = :id
-      ';
+      FROM tags 
+      WHERE post_id = :id
+    ';
     
-    $this->execute($sql_posts, [':id' => $id]);
     $this->execute($sql_tags, [':id' => $id]);
   }
-  
 }

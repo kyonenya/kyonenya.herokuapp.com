@@ -25,7 +25,10 @@ abstract class Model
       $stmt->execute($params);
       return $stmt;
     } catch (PDOException $e) {
-      echo $e;
+      // トランザクション処理の取り消し
+      $this->pdo->rollBack();
+      echo $e->getMessage();
+      die();
     }    
   }
   

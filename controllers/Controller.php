@@ -5,16 +5,18 @@
  */
 abstract class Controller
 {
-  public $models = [];
+  protected $models = [];
   protected $request;
   protected $view;
-  protected $response;  
+  protected $response;
+  protected $session;
 
   public function __construct()
   {
     $this->request = new Request();
     $this->view = new View();
     $this->response = new Response();
+    $this->session = new Session();
   }
   
   public function runAction(string $action, array $params = []): ?string

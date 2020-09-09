@@ -1,7 +1,7 @@
 <?php
 /**
- * PostsModel.php
- * postsテーブル（ならびにtagsテーブル）を操作
+ * Postsモデル
+ * postsテーブルならびにtagsテーブルのCRUD処理
  */
 class PostsModel extends Model 
 {
@@ -97,34 +97,23 @@ class PostsModel extends Model
       VALUES
         (:title, :body, :created_at, :modified_at)
       ';
-    
-    $sql_tags = '
-      INSERT INTO tags
-        (post_id, tag)
-      VALUES
-        (:post_id, :tag)
-      ';
 
     $created_at = $modified_at = DateModel::getCurrentTime();
-    
+
+    $this->pdo->beginTransaction();    
     // 記事を挿入
-    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]);
-    
+    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]); 
     // 挿入した記事のidを取得
     $post_id = $this->getLastInsertedId();
-
     // タグを挿入
-    $stmt = $this->pdo->prepare($sql_tags); 
-    $stmt->bindValue(':post_id', $post_id, PDO::PARAM_INT);
-    foreach ($tags as $tag) {
-      $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
-      $stmt->execute();
-    }
+    $this->insertTags($post_id, $tags);
+    
+    $this->pdo->commit();
   }
   
   public function updatePost(int $id, ?string $title, string $body, array $tags): void
   {
-    $sql_post = '
+    $sql_posts = '
       UPDATE posts
       SET title = :title, body = :body, modified_at = :modified_at
       WHERE id = :id
@@ -132,31 +121,58 @@ class PostsModel extends Model
     
     $modified_at = DateModel::getCurrentTime();
     
-    $this->execute($sql_post, [':id' => $id, ':title' => $title, ':body' => $body, ':modified_at' => $modified_at]);
+    $this->pdo->beginTransaction();
+    $this->execute($sql_posts, [':id' => $id, ':title' => $title, ':body' => $body, ':modified_at' => $modified_at]);
     
-    // TODO タグの更新、変更された値だけを追加、または削除
-    // いや、全削除・全追加の方がスッキリするか
+    // タグの更新＝全削除して全追加
+    $this->deleteTags($id);
+    $this->insertTags($id, $tags);
+    
+    $this->pdo->commit();
+  }
+  
+  public function insertTags(int $id, array $tags): void
+  {
+    $sql_tags = '
+      INSERT INTO tags
+        (post_id, tag)
+      VALUES
+        (:post_id, :tag)
+    ';
+    
+    $stmt = $this->pdo->prepare($sql_tags);
+    
+    $stmt->bindValue(':post_id', $id, PDO::PARAM_INT);
+    
+    foreach ($tags as $tag) {
+      $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
+      $stmt->execute();
+    }
   }
   
   public function deletePost(int $id): void
   {
-    // TODO トランザクション
     $sql_posts = '
       DELETE 
       FROM posts
       WHERE id = :id      
       ';
-      
+  
+    $this->pdo->beginTransaction();
+    $this->execute($sql_posts, [':id' => $id]);
+    $this->deleteTags($id);
+    
+    $this->pdo->commit();
+  }
+
+  public function deleteTags(int $id): void
+  {
     $sql_tags = '
       DELETE 
       FROM tags 
       WHERE post_id = :id
-      ';
+    ';
     
-    $this->pdo->beginTransaction();
-    $this->execute($sql_posts, [':id' => $id]);
     $this->execute($sql_tags, [':id' => $id]);
-    $this->pdo->commit();
   }
-  
 }

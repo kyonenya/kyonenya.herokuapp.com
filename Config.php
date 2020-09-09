@@ -1,4 +1,8 @@
 <?php
+/**
+ * Configクラス
+ * アプリごとの設定や環境変数、グローバル設定の管理
+ */
 class Config
 {
   // ルーティング定義
@@ -30,6 +34,18 @@ class Config
     '/posts/delete/(?P<id>\d+)' => [
       'controller' => 'PostController',
       'action' => 'deleteAction',
+    ],
+    '/admin' =>[
+      'controller' => 'AdminController',
+      'action' => 'indexAction',
+    ],
+    '/admin/login' =>[
+      'controller' => 'AdminController',
+      'action' => 'loginAction',
+    ],
+    '/admin/auth' =>[
+      'controller' => 'AdminController',
+      'action' => 'authAction',
     ],
     '/about' => [
       'controller' => 'PageController',

@@ -38,8 +38,8 @@ class PostController extends Controller
     // POST内容を取得してinsert文を実行
     $title = $this->request->getPost('title', '');
     $body = $this->request->getPost('body');
-    $taglist = $this->request->getPost('tagcsv');
-    $tags = explode(' ', $taglist);
+    $tagcsv = $this->request->getPost('tagcsv');
+    $tags = explode(' ', $tagcsv);
     
     $this->findModel('PostsModel')->insertPost($title, $body, $tags);
     
@@ -66,8 +66,8 @@ class PostController extends Controller
     // POST内容を取得してinsert文を実行
     $title = $this->request->getPost('title', '');
     $body = $this->request->getPost('body');
-    $taglist = $this->request->getPost('tagcsv');
-    $tags = explode(' ', $taglist);
+    $tagcsv = $this->request->getPost('tagcsv');
+    $tags = explode(' ', $tagcsv);
     
     $this->findModel('PostsModel')->updatePost($id, $title, $body, $tags);
 

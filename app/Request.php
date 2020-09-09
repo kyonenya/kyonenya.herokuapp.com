@@ -4,7 +4,7 @@
  * ブラウザからのリクエスト情報やURL文字列の処理
  */
 class Request
-{
+{  
   /**
    * パス情報を取得
    * URLの中で最も重要な、ルーティングに用いる最末尾の部分。
@@ -13,11 +13,11 @@ class Request
   public function getPathInfo(): ?string
   {
     $requestUri = $this->getRequestUri();
-    $baseUrl = $this->getBaseUrl();
+    $baseUrl = Config::getBaseUrl();
     
     if (isset($_SERVER['PATH_INFO'])) {
       return $_SERVER['PATH_INFO'];
-    }    
+    } 
     
     if (Config::isRewriteEngineOn()) {
       // リクエストURIからベースURLを引き算する
@@ -26,16 +26,6 @@ class Request
       // クエリ文字列でパス情報を代用する
       return $this->getGet('l', '/');      
     }   
-  }
-
-  /**
-   * ベースURLを取得
-   * リクエストURIのうち、パス情報を除いた無意味な部分。
-   * 例）'/index.php'
-   */
-  public function getBaseUrl(): ?string
-  {
-    return Config::getBaseUrl();
   }
   
   /**
@@ -48,11 +38,10 @@ class Request
   {
     $pos = strpos($_SERVER['REQUEST_URI'], '?');
 
-    // GETパラメータがあれば削除
     if ($pos === false) {
       return $_SERVER['REQUEST_URI'];
     } else {
-      // 先頭から'?'の前までを返す
+      // GETパラメータを削除、先頭から'?'の前までを返す
       return substr($_SERVER['REQUEST_URI'], 0, $pos);
     }   
   }

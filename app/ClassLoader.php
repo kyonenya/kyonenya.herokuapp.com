@@ -7,16 +7,15 @@ class ClassLoader
   protected $dirs = [];
   
   // 読み込み先のディレクトリをいくつでも登録できる
-  public function registerDir(string $eachDir): void
+  public function registerDir(string $dir): void
   {
     // dirs配列の要素として、新たに登録したいディレクトリを順次追加
-    $this->dirs[] = $eachDir;
+    $this->dirs[] = $dir;
   }
     
   // オードロードを実行
   public function register(): void
-  { 
-    // コールバックに無名関数を渡す
+  {
     spl_autoload_register(function (string $className) {
       // ディレクトリ内のクラスファイルを一件づつ照合していき、
       foreach ($this->dirs as $eachDir) {

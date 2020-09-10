@@ -2,15 +2,17 @@
 /**
  * Appクラス
  * アプリケーションの本体
- * ルーターとコントローラーを仲介する
+ * ルーターとコントローラーを仲介し、例外をキャッチする。
  */
 namespace App;
+use \App\Exception;
 
 class App
 {
   protected $controllers = [];
   protected $request;
   protected $router;
+  // TODO 消す
   protected $response;
 
   public function __construct()
@@ -31,10 +33,10 @@ class App
       $controller = $this->findController($routed['controllerClass']);
       // アクションを実行する
       $html = $controller->runAction($routed['action'], $routed['captured']);
-      
+      // TODO 消す
       $this->response->send($html);
       
-    } catch (HttpNotFoundException $e) {
+    } catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);
     } catch (Exception $e) {
       print_r($e);
@@ -44,7 +46,7 @@ class App
   public function findController(string $controller): object
   {
     if (!class_exists($controller)) {
-      throw new HttpNotFoundException('コントローラーが存在しません');
+      throw new Exception\HttpNotFound('コントローラーが存在しません');
     }    
     // まだコントローラーインスタンスが生成されていなければ、
     if (!isset($this->controllers[$controller])) {

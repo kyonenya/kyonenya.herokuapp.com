@@ -1,9 +1,10 @@
 <?php
 /**
  * Controllerクラス
- * あらゆる処理
+ * あらゆる処理の担い手
  */
 namespace Controller;
+use \App\Exception;
 
 abstract class Controller
 {
@@ -16,7 +17,7 @@ abstract class Controller
   public function __construct()
   {
     $this->request = new \App\Request();
-    $this->view = new \View();
+    $this->view = new \View\View();
     $this->response = new \App\Response();
     $this->session = new \App\Session();
   }
@@ -24,7 +25,7 @@ abstract class Controller
   public function runAction(string $action, array $params = []): ?string
   {
     if (!method_exists($this, $action)) {
-      throw new HttpNotFoundException('アクションが存在しません');
+      throw new Exception\HttpNotFound('アクションが存在しません');
     }
     
     $html = $this->$action($params);
@@ -32,18 +33,21 @@ abstract class Controller
     return $html;
   }
 
-  public function findModel(string $model): object
+  public function findModel(string $modelName): object
   {
-    if (!class_exists($model)) {
-      throw new HttpNotFoundException('モデルが存在しません');
+    // モデル名に名前空間を適用
+    $modelClass = '\\Model\\' . $modelName;
+    
+    if (!class_exists($modelClass)) {
+      throw new Exception\HttpNotFound('モデルが存在しません');
     }
     // まだモデルインスタンスが生成されていなければ、
-    if (!isset($this->models[$model])) {
+    if (!isset($this->models[$modelName])) {
       // 新規作成して配列に登録。
-      $this->models[$model] = new $model();
+      $this->models[$modelName] = new $modelClass();
     }
     
-    return $this->models[$model];
+    return $this->models[$modelName];
   }
   
 }

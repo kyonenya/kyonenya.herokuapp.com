@@ -1,9 +1,8 @@
 <?php
 /**
- * 自動実行処理
- *
+ * bootstrap.php
  * クラスのオートロード設定など、アプリの実行に必要な前処理をここに書く。
- * index.phpから自動的に読み込まれる。
+ * index.phpから読み込まれて自動実行される。
  */
 
 // 強い型付けを宣言
@@ -12,7 +11,7 @@ declare(strict_types = 1);
 // 以下のクラスは手動でロードしておく
 // 設定ファイルをロード
 require 'Config.php';
-require 'views/View.php';
+// require 'views/View.php';
 
 /**
  * クラスをオートロードする

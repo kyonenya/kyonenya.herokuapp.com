@@ -1,8 +1,10 @@
 <?php
 /**
  * Controllerクラス
- * 
+ * あらゆる処理
  */
+namespace Controller;
+
 abstract class Controller
 {
   protected $models = [];
@@ -13,10 +15,10 @@ abstract class Controller
 
   public function __construct()
   {
-    $this->request = new Request();
-    $this->view = new View();
-    $this->response = new Response();
-    $this->session = new Session();
+    $this->request = new \App\Request();
+    $this->view = new \View();
+    $this->response = new \App\Response();
+    $this->session = new \App\Session();
   }
   
   public function runAction(string $action, array $params = []): ?string

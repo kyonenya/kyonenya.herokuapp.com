@@ -1,8 +1,10 @@
 <?php
 /**
- * PostController.php
+ * Postコントローラー
  * 
  */
+namespace Controller;
+
 class PostController extends Controller
 {
   // protected $view;
@@ -10,7 +12,7 @@ class PostController extends Controller
   
   public function indexAction(): string
   {
-    $posts = $this->findModel('PostsModel')->getPostlist();
+    $posts = $this->findModel('\Model\PostsModel')->getPostlist();
 
     return $this->view->render('postlist.php', ['posts' => $posts], 'layout.php');
   }
@@ -43,7 +45,7 @@ class PostController extends Controller
     
     $this->findModel('PostsModel')->insertPost($title, $body, $tags);
     
-    $this->response->redirect(Config::getBaseUrl() . '/');
+    $this->response->redirect(\Config::getBaseUrl() . '/');
   }
 
   public function editAction(array $captured): string

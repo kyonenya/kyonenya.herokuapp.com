@@ -6,7 +6,7 @@
  */
 require '../bootstrap.php';
 
-$app = new App();
+$app = new \App\App();
 $app->run();
 
 // デバッグ用

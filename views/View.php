@@ -10,14 +10,13 @@ class View
   public function __construct()
   {
     // このクラスファイルをビューファイルのルートディレクトリに置く
-    $this->viewDir = dirname(__FILE__);
+    $this->viewDir = __DIR__;
   }
   
   public function render(string $viewName, array $variables = [], ?string $layoutName = null): string
   {
     $view = $this->viewDir . '/' . $viewName;
     $layout = $this->viewDir . '/' . $layoutName;
-
     
     if (!file_exists($view)) {
       throw new HttpNotFoundException('ビューが存在しません');
@@ -27,7 +26,7 @@ class View
     extract($variables);
     
     // つねに埋め込む値
-    $baseUrl = Config::getBaseUrl();
+    $baseUrl = \Config::getBaseUrl();
     
     // requireした瞬間にechoされないよう、requireしたら文字列を受け取る
     ob_start();
@@ -46,6 +45,7 @@ class View
   }
   
   // いつもの
+  // TODO 可変長引数で一括処理したい
   public function h(?string $string): ?string
   {
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');

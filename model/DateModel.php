@@ -1,4 +1,11 @@
 <?php
+/**
+ * Dateモデル
+ * 日付・時刻の処理
+ */
+namespace Model;
+use DateTimeImmutable;
+
 class DateModel 
 {
   public static function getDateAgo($time)
@@ -27,7 +34,7 @@ class DateModel
       $time = ($diff / 2764800) / 12;
       $unit = '年前';
     }
-    
+    // 四捨五入
     return round($time) . $unit;
   }
 

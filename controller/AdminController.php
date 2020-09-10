@@ -3,6 +3,8 @@
  * Adminコントローラー
  * 
  */
+namespace Controller;
+
 class AdminController extends Controller
 {
   public function loginAction()

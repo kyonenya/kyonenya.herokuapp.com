@@ -1,8 +1,11 @@
 <?php
 /**
  * Appクラス
- * ルーティングとコントローラーの接着剤
+ * アプリケーションの本体
+ * ルーターとコントローラーを仲介する
  */
+namespace App;
+
 class App
 {
   protected $controllers = [];

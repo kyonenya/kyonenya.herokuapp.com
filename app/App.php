@@ -27,14 +27,17 @@ class App
     $routed = $this->router->resolve($pathInfo);
 
     try {
-      $controller = $this->findController($routed['controller']);
-      
+      // コントローラーを呼び出す
+      $controller = $this->findController($routed['controllerClass']);
+      // アクションを実行する
       $html = $controller->runAction($routed['action'], $routed['captured']);
       
       $this->response->send($html);
       
     } catch (HttpNotFoundException $e) {
       $this->response->render404page($e);
+    } catch (Exception $e) {
+      print_r($e);
     }
   }
   

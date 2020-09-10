@@ -15,16 +15,18 @@ require 'Config.php';
 require 'views/View.php';
 
 /**
- * クラスのオートロード
+ * クラスをオートロードする
  * クラスファイル命名規則：./名前空間名（先頭小文字）/クラス名.php
  */
 spl_autoload_register(function(string $fullyQualifiedName) {
-  // 完全修飾名の先頭のバックスラッシュを除去
+  // 完全修飾名の先頭のバックスラッシュを除去する
   $qualifiedName = ltrim($fullyQualifiedName, '\\');
-  // 修飾名をファイルパスに変換
+  // 修飾名をファイルパスに変換する
   $classFile = __DIR__ . '/' . lcfirst(str_replace('\\', '/', $qualifiedName)).'.php';
-
-  require_once($classFile);
+  // クラスファイルをロードする
+  if (file_exists($classFile)) {
+    require $classFile;
+  }
 });
 
 //  エラーを表示するかどうか

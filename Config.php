@@ -8,7 +8,7 @@ class Config
   // ルーティング定義
   const ROUTE_DEFINITIONS = [
     '/' => [
-      'controller' => '\Controller\PostController',
+      'controller' => 'PostControllers',
       'action' => 'indexAction',
     ],
     '/posts/(?P<id>\d+)' => [

@@ -14,18 +14,19 @@ class Router
     $this->routes = \Config::ROUTE_DEFINITIONS;
   }
 
-  // ルーティング実行部、パスインフォに対応するコントローラーとアクションを返す。
+  /**
+   * ルーティング実行部
+   * パス情報に対応するコントローラーとアクションを返す
+   */
   public function resolve(?string $pathInfo = '/'): array
   {
     foreach ($this->routes as $path => $routed) {
       $pattern = '#^' . $path . '$#';
       if (preg_match($pattern, $pathInfo, $matches)) {
-        // 名前付きマッチング以外の値を削除
-        $captured = array_filter($matches, function($value, $key) {
-          return !is_int($key);
-        }, ARRAY_FILTER_USE_BOTH);
+        // コントローラー名に名前空間を適用
+        $routed['controllerClass'] = '\\Controller\\' . $routed['controller'];
         
-        return array_merge($routed, ['captured' => $captured]);
+        return array_merge($routed, ['captured' => $matches]);
       }
     }
   }

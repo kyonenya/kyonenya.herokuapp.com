@@ -12,7 +12,7 @@ class PostController extends Controller
   
   public function indexAction(): string
   {
-    $posts = $this->findModel('\Model\PostsModel')->getPostlist();
+    $posts = $this->findModel('PostsModel')->getPostlist();
 
     return $this->view->render('postlist.php', ['posts' => $posts], 'layout.php');
   }

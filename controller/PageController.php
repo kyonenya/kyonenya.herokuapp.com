@@ -3,6 +3,8 @@
  * PageController.php
  * 
  */
+namespace Controller;
+
 class PageController extends Controller
 {
   // protected $config;

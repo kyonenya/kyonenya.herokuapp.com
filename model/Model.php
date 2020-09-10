@@ -1,9 +1,13 @@
 <?php
 /**
- * class Model
- * データベースの各テーブルごとの処理。
+ * Modelクラス
+ * データベースの各テーブルごとの処理、またはそれに限定されないデータ加工処理
  * 
  */
+namespace Model;
+use \PDO;
+use \PDOException;
+
 abstract class Model
 {
   protected $pdo;
@@ -13,7 +17,7 @@ abstract class Model
     // DBにまだ接続されていないならば、
     if (!isset($this->pdo)) {
       // 接続して接続情報を保持。
-      $this->pdo = $this->connectDb(Config::getDbConfig());
+      $this->pdo = $this->connectDb(\Config::getDbConfig());
     }
   }
   

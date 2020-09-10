@@ -1,14 +1,14 @@
 <?php
 /**
  * Configクラス
- * アプリごとの設定や環境変数、グローバル設定の管理
+ * アプリごとの設定や環境変数、グローバル変数の管理
  */
 class Config
 {
   // ルーティング定義
   const ROUTE_DEFINITIONS = [
     '/' => [
-      'controller' => 'PostController',
+      'controller' => '\Controller\PostController',
       'action' => 'indexAction',
     ],
     '/posts/(?P<id>\d+)' => [

@@ -3,6 +3,8 @@
  * Postsモデル
  * postsテーブルならびにtagsテーブルのCRUD処理
  */
+namespace Model;
+
 class PostsModel extends Model 
 {
   public function getPostlist() {
@@ -43,7 +45,7 @@ class PostsModel extends Model
       ";
     
     // DBごとにスイッチ
-    $sql = (Config::getDbType() === 'postgres')
+    $sql = (\Config::getDbType() === 'postgres')
       ? $sql_postgres
       : $sql_sqlite;
 
@@ -76,7 +78,7 @@ class PostsModel extends Model
       GROUP BY posts.id
       ";
 
-    $sql = (Config::getDbType() === 'postgres')
+    $sql = (\Config::getDbType() === 'postgres')
       ? $sql_postgres
       : $sql_sqlite;
     

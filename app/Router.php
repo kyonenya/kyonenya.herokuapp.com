@@ -3,13 +3,15 @@
  * Routerクラス
  *
  */
+namespace App;
+
 class Router 
 {
   protected $routes;
   
   public function __construct()
   {
-    $this->routes = Config::ROUTE_DEFINITIONS;
+    $this->routes = \Config::ROUTE_DEFINITIONS;
   }
 
   // ルーティング実行部、パスインフォに対応するコントローラーとアクションを返す。

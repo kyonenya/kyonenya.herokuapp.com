@@ -3,6 +3,8 @@
  * Requestクラス
  * ブラウザからのリクエスト情報やURL文字列の処理
  */
+namespace App;
+
 class Request
 {  
   /**
@@ -13,13 +15,13 @@ class Request
   public function getPathInfo(): ?string
   {
     $requestUri = $this->getRequestUri();
-    $baseUrl = Config::getBaseUrl();
+    $baseUrl = \Config::getBaseUrl();
     
     if (isset($_SERVER['PATH_INFO'])) {
       return $_SERVER['PATH_INFO'];
     } 
     
-    if (Config::isRewriteEngineOn()) {
+    if (\Config::isRewriteEngineOn()) {
       // リクエストURIからベースURLを引き算する
       return substr($requestUri, strlen($baseUrl)); 
     } else {

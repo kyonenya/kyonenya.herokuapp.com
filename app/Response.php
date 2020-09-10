@@ -3,6 +3,8 @@
  * Responseクラス
  *
  */
+namespace App;
+
 class Response 
 {
   // protected $statusCode = 200;  // 'OK' 

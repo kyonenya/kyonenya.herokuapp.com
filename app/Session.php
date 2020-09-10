@@ -3,6 +3,8 @@
  * Sessionクラス
  * 
  */
+namespace App;
+
 class Session 
 {
   protected static $isSessionStarted = false;

@@ -1,7 +1,13 @@
 <?php
-// クラスのオートロード
-// bootstrap.php（自動実行処理）から呼び出す。
+/**
+ * ClassLoaderクラス
+ * クラスのオートロード
+ * 
+ * bootstrap.php（自動実行処理）から呼び出す。
+ */
 // 命名規則：クラス名.php
+namespace App;
+
 class ClassLoader
 { 
   protected $dirs = [];

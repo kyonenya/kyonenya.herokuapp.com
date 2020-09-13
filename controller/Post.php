@@ -37,21 +37,16 @@ class Post extends Controller
     return $this->view->render('editor.php', [], 'layout.php');
   }
 
+  /**
+   * 新規記事をデータベースに格納する
+   */
   public function storeAction(): void
-  {
-    // POST以外のアクセスを弾く
-    if ($this->request->isPost() === false) {
-      throw new Exception\HttpNotFound('不正なアクセスです');
-    }
-    // POST内容を取得してinsert文を実行する
-    $title = $this->request->getPost('title', '');
-    $body = $this->request->getPost('body');
-    $tagcsv = $this->request->getPost('tagcsv');
-    $tags = explode(' ', $tagcsv);
+  {    
+    $posted = $this->getPostedPost();
     
-    $this->findModel('Posts')->insertPost($title, $body, $tags);
+    $this->findModel('Posts')->insertPost($posted['title'], $posted['body'], $posted['tags']);
     
-    $this->response->redirect(\Config::getBaseUrl() . '/');
+    $this->response->redirect($this->baseUrl . '/');
   }
   
   /**
@@ -68,28 +63,20 @@ class Post extends Controller
   }
 
   /**
-   * 記事を更新する
+   * 記事をデータベースで更新する
    */
   public function updateAction(array $captured): void
   {
     $id = $captured['id'];
-    
-    if ($this->request->isPost() === false) {
-      throw new Exception\HttpNotFound('不正なアクセスです');
-    }
-    // POST内容を取得してupdate文を実行する
-    $title = $this->request->getPost('title', '');
-    $body = $this->request->getPost('body');
-    $tagcsv = $this->request->getPost('tagcsv');
-    $tags = explode(' ', $tagcsv);
-    
-    $this->findModel('Posts')->updatePost($id, $title, $body, $tags);
+    $posted = $this->getPostedPost();
+      
+    $this->findModel('Posts')->updatePost($id, $posted['title'], $posted['body'], $posted['tags']);
 
-    $this->response->redirect(Config::getBaseUrl() . '/');
+    $this->response->redirect($this->baseUrl . '/');
   }
   
   /**
-   * 記事を削除する
+   * 記事をデータベースから削除する
    */
   public function deleteAction(array $captured): void
   {
@@ -97,7 +84,23 @@ class Post extends Controller
     
     $this->findModel('Posts')->deletePost($id);
     // 削除完了後、トップページに遷移
-    $this->response->redirect(Config::getBaseUrl() . '/');
+    $this->response->redirect($this->baseUrl . '/');
   }
 
+  /**
+   * POSTされた記事内容を取得する
+   */
+  public function getPostedPost(): array
+  {
+    if ($this->request->isPost() === false) {
+      throw new Exception\HttpNotFound('不正なアクセスです');
+    }
+    // POSTされた記事内容を取得する
+    $title = $this->request->getPost('title', '');
+    $body = $this->request->getPost('body');
+    $tagcsv = $this->request->getPost('tagcsv');
+    $tags = explode(' ', $tagcsv);
+    
+    return ['title' => $title, 'body' => $body, 'tags' => $tags];
+  }
 }

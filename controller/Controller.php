@@ -13,6 +13,8 @@ abstract class Controller
   protected $view;
   protected $response;
   protected $session;
+  
+  protected $baseUrl;
 
   public function __construct()
   {
@@ -20,11 +22,12 @@ abstract class Controller
     $this->view = new \App\View();
     $this->response = new \App\Response();
     $this->session = new \App\Session();
+    
+    $this->baseUrl = \Config::getBaseUrl();
   }
   
   /**
-   * 
-   * 
+   * 指定されたアクションを実行する
    */
   public function runAction(string $action, array $params = []): ?string
   {

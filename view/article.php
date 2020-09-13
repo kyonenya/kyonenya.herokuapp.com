@@ -13,7 +13,7 @@
       <?= $post['body'] ?>
     </div>
     <footer class="bl_text_footer">
-      <span class="bl_posts_dateago"><?= 'n日前' ?></span>
+      <span class="bl_posts_dateago"><?= $post['dateago'] ?></span>
       <ul class="bl_tags">
       <?php foreach ($post['tags'] as $eachTag): ?>
         <li>

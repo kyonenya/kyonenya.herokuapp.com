@@ -1,6 +1,6 @@
 <?php
 /**
- * Controllerクラス
+ * Controller抽象クラス
  * あらゆる処理の担い手
  */
 namespace Controller;
@@ -22,6 +22,10 @@ abstract class Controller
     $this->session = new \App\Session();
   }
   
+  /**
+   * 
+   * 
+   */
   public function runAction(string $action, array $params = []): ?string
   {
     if (!method_exists($this, $action)) {
@@ -33,17 +37,21 @@ abstract class Controller
     return $html;
   }
 
+  /**
+   * モデルクラスのインスタンスを見つけてくる
+   * まだ生成されていない場合、新たに生成する。
+   */
   public function findModel(string $modelName): object
   {
-    // モデル名に名前空間を適用
+    // モデル名に名前空間を適用する
     $modelClass = '\\Model\\' . $modelName;
     
     if (!class_exists($modelClass)) {
       throw new Exception\HttpNotFound('モデルが存在しません');
     }
-    // まだモデルインスタンスが生成されていなければ、
+    // まだモデルインスタンスが生成されていない場合、
     if (!isset($this->models[$modelName])) {
-      // 新規作成して配列に登録。
+      // 新規作成して配列に登録する。
       $this->models[$modelName] = new $modelClass();
     }
     

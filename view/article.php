@@ -1,3 +1,7 @@
+<?php
+  // HTML文字列をエスケープする
+  list($post['title']) = $this->escape($post['title']);
+?>
   <article>
     <header class="bl_text_header">
       <time class="bl_text_date" datetime="<?= $post['created_at'] ?>">

@@ -1,5 +1,5 @@
 <?php  
-  $dot = (Config::isRewriteEngineOn() === false)
+  $dot = (\Config::isRewriteEngineOn() === false)
     ? '.'  // 相対パス指定
     : '';
 ?>

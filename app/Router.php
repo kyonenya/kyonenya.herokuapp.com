@@ -1,7 +1,7 @@
 <?php
 /**
  * Routerクラス
- *
+ * リクエストURLからコントローラーを紐付ける
  */
 namespace App;
 
@@ -15,7 +15,7 @@ class Router
   }
 
   /**
-   * ルーティング実行部
+   * ルーティングを実行する
    * パス情報に対応するコントローラーとアクションを返す
    */
   public function resolve(?string $pathInfo = '/'): array

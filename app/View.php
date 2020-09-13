@@ -16,7 +16,7 @@ class View
   }
   
   /**
-   * ビューを描画する
+   * ビューを生成する
    * HTML文字列を組み立てて返す
    */
   public function render(string $viewName, array $variables = [], ?string $layoutName = null): string
@@ -30,9 +30,8 @@ class View
     
     // ビューに埋め込む変数を連想配列から一括展開
     extract($variables);
-    
     // つねに埋め込む値
-    $baseUrl = \Config::getBaseUrl();
+    $baseUrl = \Config::getBaseUrl();  
     
     // requireした瞬間にechoされないよう、requireしたら文字列を受け取る
     ob_start();
@@ -50,11 +49,16 @@ class View
     return $html;
   }
   
-  // いつもの
-  // TODO 可変長引数で一括処理したい
-  public function h(?string $string): ?string
+  /**
+   * HTML文字列を一括でエスケープする
+   * 可変長引数を配列で受け取り配列を返すので、結果を分割代入で受け取る。
+   * list($var1, $var2, $var3) = $this->escape($var1, $var2, $var3);
+   */
+  public function escape(string ...$vars): array
   {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return array_map(function($eachVar) {
+        return htmlspecialchars($eachVar, ENT_QUOTES, 'UTF-8');
+    }, $vars);
   }
   
 }

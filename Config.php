@@ -8,56 +8,56 @@ class Config
   // ルーティング定義
   const ROUTE_DEFINITIONS = [
     '/' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'indexAction',
     ],
     '/posts/(?P<id>\d+)' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'articleAction',
     ],
     '/posts/create' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'createAction',
     ],
     '/posts/store' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'storeAction',
     ],
     '/posts/edit/(?P<id>\d+)' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'editAction',
     ],
     '/posts/update/(?P<id>\d+)' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'updateAction',
     ],
     '/posts/delete/(?P<id>\d+)' => [
-      'controller' => 'PostController',
+      'controller' => 'Post',
       'action' => 'deleteAction',
     ],
     '/admin' =>[
-      'controller' => 'AdminController',
+      'controller' => 'Admin',
       'action' => 'indexAction',
     ],
     '/admin/login' =>[
-      'controller' => 'AdminController',
+      'controller' => 'Admin',
       'action' => 'loginAction',
     ],
     '/admin/auth' =>[
-      'controller' => 'AdminController',
+      'controller' => 'Admin',
       'action' => 'authAction',
     ],
     '/about' => [
-      'controller' => 'PageController',
+      'controller' => 'Page',
       'action' => 'aboutAction',
     ],
     '/works' =>[
-      'controller' => 'PageController',
+      'controller' => 'Page',
       'action' => 'worksAction',
     ],
   ];
 
-  // DB接続設定
+  // ローカルDB接続設定
   const SQLITE_CONFIG = [
     'dsn' => 'sqlite:../sqlite/blog',
     'user' => '',
@@ -104,7 +104,7 @@ class Config
   /**
    * ベースURLを取得
    * リクエストURIのうち、パス情報を除いた無意味な部分。
-   * プロジェクト全体で共通なので、RequestクラスではなくConfigクラスで保持。
+   * プロジェクト全体で共通なので、RequestクラスではなくConfigクラスで保持する。
    * 例）'/index.php'
    */
   public static function getBaseUrl(): ?string

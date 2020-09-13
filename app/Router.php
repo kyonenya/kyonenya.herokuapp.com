@@ -22,7 +22,7 @@ class Router
   {
     foreach ($this->routes as $path => $routed) {
       $pattern = '#^' . $path . '$#';
-      if (preg_match($pattern, $pathInfo, $matches)) {
+      if (preg_match($pattern, $pathInfo, $matches) === 1) {
         // コントローラー名に名前空間を適用
         $routed['controllerClass'] = '\\Controller\\' . $routed['controller'];
         

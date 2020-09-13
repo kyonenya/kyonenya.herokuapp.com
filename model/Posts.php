@@ -1,12 +1,16 @@
 <?php
 /**
  * Postsモデル
- * postsテーブルならびにtagsテーブルのCRUD処理
+ * データベースのpostsテーブル・tagsテーブルのCRUD処理
  */
 namespace Model;
+use \PDO;
 
-class PostsModel extends Model 
+class Posts extends Model
 {
+  /**
+   * 記事一覧データを取得して整形する
+   */
   public function getPostlist() {
     $posts = $this->fetchAllPosts();
 
@@ -15,13 +19,16 @@ class PostsModel extends Model
         'id' => $post['id'],
         'title' => $post['title'],
         'body' => mb_substr(strip_tags($post['body']), 0, 110),
-        'created_at' => DateModel::formatYmd($post['created_at']),
+        'created_at' => Date::formatYmd($post['created_at']),
         'tags' => $post['tags'],
-        'dateago' => DateModel::getDateAgo($post['created_at']),
+        'dateago' => Date::getDateAgo($post['created_at']),
       ];
     }, $posts);
   }
-
+  
+  /**
+   * 記事を全件取得する
+   */
   public function fetchAllPosts(): array
   {
     // 複数の記事タグの結合にGROUP_CONCATを使う
@@ -58,6 +65,9 @@ class PostsModel extends Model
     }, $posts);
   }
 
+  /**
+   * 記事を一件取得する
+   */
   public function fetchPost(int $id): array
   {
     $sql_sqlite = '
@@ -91,6 +101,9 @@ class PostsModel extends Model
     return $post;
   }
 
+  /**
+   * 記事を挿入する
+   */
   public function insertPost(?string $title, string $body, array $tags): void
   {
     $sql_posts = '
@@ -100,7 +113,7 @@ class PostsModel extends Model
         (:title, :body, :created_at, :modified_at)
       ';
 
-    $created_at = $modified_at = DateModel::getCurrentTime();
+    $created_at = $modified_at = Date::getCurrentTime();
 
     $this->pdo->beginTransaction();    
     // 記事を挿入
@@ -113,6 +126,9 @@ class PostsModel extends Model
     $this->pdo->commit();
   }
   
+  /**
+   * 記事を更新する
+   */
   public function updatePost(int $id, ?string $title, string $body, array $tags): void
   {
     $sql_posts = '
@@ -121,7 +137,7 @@ class PostsModel extends Model
       WHERE id = :id
       ';
     
-    $modified_at = DateModel::getCurrentTime();
+    $modified_at = Date::getCurrentTime();
     
     $this->pdo->beginTransaction();
     $this->execute($sql_posts, [':id' => $id, ':title' => $title, ':body' => $body, ':modified_at' => $modified_at]);
@@ -133,6 +149,9 @@ class PostsModel extends Model
     $this->pdo->commit();
   }
   
+  /**
+   * 記事タグを挿入する
+   */
   public function insertTags(int $id, array $tags): void
   {
     $sql_tags = '
@@ -152,6 +171,9 @@ class PostsModel extends Model
     }
   }
   
+  /**
+   * 記事を削除する
+   */
   public function deletePost(int $id): void
   {
     $sql_posts = '
@@ -167,6 +189,9 @@ class PostsModel extends Model
     $this->pdo->commit();
   }
 
+  /**
+   * 記事タグを削除する
+   */
   public function deleteTags(int $id): void
   {
     $sql_tags = '

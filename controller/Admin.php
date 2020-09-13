@@ -18,13 +18,13 @@ class AdminController extends Controller
       $this->session->set('auth', true);
     }
     
-    $this->response->redirect(Config::getBaseUrl() . '/admin');
+    $this->response->redirect(\Config::getBaseUrl() . '/admin');
   }
  
   public function indexAction()
   {
     if (empty($this->session->get('auth'))) {
-      $this->response->redirect(Config::getBaseUrl() . '/admin/login');
+      $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
     }
     return $this->view->render('admin.php', [], 'layout.php');
   } 

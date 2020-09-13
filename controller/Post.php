@@ -25,6 +25,7 @@ class Post extends Controller
     $id = $captured['id'];
     
     $post = $this->findModel('Posts')->fetchPost($id);
+    $post['dateago'] = \Model\Date::getDateAgo($post['created_at']);
     
     return $this->view->render('article.php', ['post' => $post], 'layout.php');
   }

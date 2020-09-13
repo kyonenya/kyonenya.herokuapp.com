@@ -11,7 +11,7 @@ declare(strict_types = 1);
 // 以下のクラスは手動でロードしておく
 // 設定ファイルをロード
 require 'Config.php';
-// require 'views/View.php';
+require 'app/functions.php';
 
 /**
  * クラスをオートロードする
@@ -30,20 +30,3 @@ spl_autoload_register(function(string $fullyQualifiedName) {
 
 //  エラーを表示するかどうか
 // ini_set('display_errors', '0');
-
-/** 
- * クラスのオートロード
- */
-// require 'app/ClassLoader.php';
-// $classLoader = new \App\ClassLoader();
-// 読み込み先のディレクトリを登録
-// $classLoader->registerDir(dirname(__FILE__) . '/app');
-// $classLoader->registerDir(dirname(__FILE__) . '/models');
-// $classLoader->registerDir(dirname(__FILE__) . '/controllers');
-// オートロード処理を実行
-// $classLoader->register();
-
-// 手動ロード
-// require 'Config.php';
-// require 'views/View.php';
-// require 'app/functions.php';

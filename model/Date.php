@@ -6,8 +6,11 @@
 namespace Model;
 use DateTimeImmutable;
 
-class DateModel 
+class Date 
 {
+  /**
+   * 何日前・何ヶ月前などを計算する
+   */
   public static function getDateAgo($time)
   {
     $date = new DateTimeImmutable($time);
@@ -38,12 +41,20 @@ class DateModel
     return round($time) . $unit;
   }
 
+  /**
+   * 現在時刻を秒数まで取得
+   * 例）2020-09-13 15:42:33
+   */
   public static function getCurrentTime(): string
   {
     $now = new DateTimeImmutable('now');
     return $now->format('Y-m-d H:i:s');
   }
   
+  /**
+   * 日付までに変換
+   * 例）2020-09-13
+   */ 
   public static function formatYmd(string $date): string
   {
     $d = new DateTimeImmutable($date);

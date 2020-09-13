@@ -2,7 +2,6 @@
 /**
  * Modelクラス
  * データベースの各テーブルごとの処理、またはそれに限定されないデータ加工処理
- * 
  */
 namespace Model;
 use \PDO;
@@ -14,14 +13,16 @@ abstract class Model
   
   public function __construct()
   {
-    // DBにまだ接続されていないならば、
+    // DBにまだ接続されていない場合、
     if (!isset($this->pdo)) {
-      // 接続して接続情報を保持。
+      // 接続して接続情報を保持する。
       $this->pdo = $this->connectDb(\Config::getDbConfig());
     }
   }
   
-  // SQL文を安全に実行
+  /**
+   * SQL文を安全に実行する
+   */
   public function execute(string $sql, array $params = []): object
   {
     try {
@@ -29,32 +30,40 @@ abstract class Model
       $stmt->execute($params);
       return $stmt;
     } catch (PDOException $e) {
-      // トランザクション処理の取り消し
+      // トランザクション処理を取り消す
       $this->pdo->rollBack();
       echo $e->getMessage();
       die();
-    }    
+    }
   }
   
-  // 1件抽出
+  /**
+   * データを一件抽出する
+   */
   public function fetch(string $sql, array $params = []): array
   {
     return $this->execute($sql, $params)->fetch(PDO::FETCH_ASSOC);
   }
   
-  // 全件抽出
+  /**
+   * データを全件抽出する
+   */
   public function fetchAll(string $sql, array $params = []): array
   {
     return $this->execute($sql, $params)->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  // 
+  /**
+   * 最後に挿入されたデータのIDを取得する
+   */
   public function getLastInsertedId()
   {
     return $this->pdo->lastInsertId();
   }
   
-  // DB接続
+  /**
+   * データベースに接続して接続情報を返す
+   */
   public function connectDb(array $config): object
   {    
     try {

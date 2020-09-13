@@ -17,7 +17,7 @@ abstract class Controller
   public function __construct()
   {
     $this->request = new \App\Request();
-    $this->view = new \View\View();
+    $this->view = new \App\View();
     $this->response = new \App\Response();
     $this->session = new \App\Session();
   }

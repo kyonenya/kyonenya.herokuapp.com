@@ -1,9 +1,10 @@
 <?php
 /**
  * Viewクラス
- * 
+ * ビューのHTML文字列を組み立てて返す
  */
-namespace View;
+namespace App;
+use \App\Exception;
 
 class View
 { 
@@ -11,17 +12,20 @@ class View
   
   public function __construct()
   {
-    // このクラスファイルをビューファイルのルートディレクトリに置く
-    $this->viewDir = __DIR__;
+    $this->viewDir = __DIR__ . '/../view';
   }
   
+  /**
+   * ビューを描画する
+   * HTML文字列を組み立てて返す
+   */
   public function render(string $viewName, array $variables = [], ?string $layoutName = null): string
   {
     $view = $this->viewDir . '/' . $viewName;
     $layout = $this->viewDir . '/' . $layoutName;
     
     if (!file_exists($view)) {
-      throw new HttpNotFoundException('ビューが存在しません');
+      throw new Exception\HttpNotFound('ビューが存在しません');
     }
     
     // ビューに埋め込む変数を連想配列から一括展開

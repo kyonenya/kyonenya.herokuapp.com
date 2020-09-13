@@ -1,7 +1,7 @@
 <?php
 /**
  * Sessionクラス
- * 
+ * セッションデータやログイン認証情報を管理する
  */
 namespace App;
 
@@ -17,16 +17,21 @@ class Session
     }
   }
   
+  /**
+   * セッションに値をセットする
+   */  
   public function set(string $key, string $value): void
   {
     $_SESSION[$key] = $value;
   }
   
+  /**
+   * セッションから値を取得する
+   */ 
   public function get(string $key, string $default = null): ?string
   {
     return $_SESSION[$key] 
       ?? $default;
   }
-  
-  
+    
 }

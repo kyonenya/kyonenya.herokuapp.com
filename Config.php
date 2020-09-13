@@ -57,14 +57,17 @@ class Config
     ],
   ];
 
-  // ローカルDB接続設定
+  // ローカルのデータベースの接続設定
   const SQLITE_CONFIG = [
     'dsn' => 'sqlite:../sqlite/blog',
     'user' => '',
     'pass' => '',
   ];
 
-  // DBの種類を取得（'postgres'または'sqlite'）
+  /**
+   * データベースの種類を取得する
+   * 'postgres'または'sqlite'
+   */
   public static function getDbType(): string
   {  
     if ($_ENV['DATABASE_URL']) {
@@ -75,7 +78,9 @@ class Config
     }
   }
   
-  // DBの接続設定を取得
+  /**
+   * データベースの接続設定を取得する
+   */
   public static function getDbConfig(): array
   {   
     if ($_ENV['DATABASE_URL']) {
@@ -85,7 +90,9 @@ class Config
     }
   }
 
-  // データベースURLをPDO接続用の設定に変換
+  /**
+   * データベースURLをPDO接続用の設定に変換する
+   */
   public static function convertDbUrl(string $dbUrl) :array
   {
     // データベースURLを展開
@@ -118,7 +125,9 @@ class Config
     }
   }
   
-  // ApacheのRewriteEngineがオンかどうか
+  /**
+   * ApacheのRewriteEngineがオンかどうか
+   */
   public static function isRewriteEngineOn(): bool
   {
     // DraftCode環境においてのみオフ
@@ -129,7 +138,9 @@ class Config
     }
   }
 
-  // 実行環境がiPadアプリのDrafCodeであるかどうか
+  /**
+   * 実行環境がiPadアプリ（DrafCode）であるかどうか
+   */
   public static function isDraftCodeEnv(): bool
   {
     return $_SERVER['SERVER_SOFTWARE'] === 'DraftCode IDE Runtime';

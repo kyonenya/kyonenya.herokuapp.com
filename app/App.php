@@ -1,8 +1,8 @@
 <?php
 /**
  * Appクラス
- * アプリケーションの本体
- * ルーターとコントローラーを仲介し、例外をキャッチする。
+ * アプリ全体のエントリーポイント
+ * ルーターとコントローラーを仲介し、中で生じた例外をキャッチする。
  */
 namespace App;
 use \App\Exception;
@@ -22,7 +22,10 @@ class App
     $this->response = new Response();
   }
 
-  // ルーティングからアクションの実行、レスポンスを返すまで
+  /**
+   * アプリのエントリーポイント
+   * ルーティングからアクションの実行、レスポンスを返すまで
+   */
   public function run(): void
   {
     $pathInfo = $this->request->getPathInfo();    
@@ -39,18 +42,23 @@ class App
     } catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);
     } catch (Exception $e) {
+      // ! とりあえず表示させる
       print_r($e);
     }
   }
   
+  /**
+   * コントローラークラスのインスタンスを見つけてくる
+   * まだ生成されていない場合、新たに生成する。
+   */
   public function findController(string $controller): object
   {
     if (!class_exists($controller)) {
       throw new Exception\HttpNotFound('コントローラーが存在しません');
     }    
-    // まだコントローラーインスタンスが生成されていなければ、
+    // まだコントローラーインスタンスが生成されていない場合、
     if (!isset($this->controllers[$controller])) {
-      // 新規作成して配列に登録。
+      // 新規作成して配列に登録する。
       $this->controllers[$controller] = new $controller();
     } 
     

@@ -7,11 +7,19 @@ namespace Controller;
 
 class AdminController extends Controller
 {
+  /**
+   * 
+   * 
+   */
   public function loginAction()
   {
     return $this->view->render('login.php', [], 'layout.php');
   }
   
+  /**
+   * 
+   * 
+   */
   public function authAction()
   {
     if (true) {  // TODO パスワード認証
@@ -21,6 +29,10 @@ class AdminController extends Controller
     $this->response->redirect(\Config::getBaseUrl() . '/admin');
   }
  
+  /**
+   * 
+   * 
+   */
   public function indexAction()
   {
     if (empty($this->session->get('auth'))) {

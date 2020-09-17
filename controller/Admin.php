@@ -5,7 +5,7 @@
  */
 namespace Controller;
 
-class AdminController extends Controller
+class Admin extends Controller
 {
   /**
    * 

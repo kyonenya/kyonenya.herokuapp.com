@@ -8,8 +8,7 @@ namespace Controller;
 class Admin extends Controller
 {
   /**
-   * 
-   * 
+   * ログインページを表示する
    */
   public function loginAction()
   {
@@ -22,10 +21,14 @@ class Admin extends Controller
    */
   public function authAction()
   {
-    if (true) {  // TODO パスワード認証
-      $this->session->set('auth', true);
+    $password = $this->request->getPost('password');
+    $isValid = password_verify($password, \Config::getPassword());
+
+    if (!$isValid) {
+      $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
     }
     
+    $this->session->set('auth', true);    
     $this->response->redirect(\Config::getBaseUrl() . '/admin');
   }
  
@@ -40,4 +43,5 @@ class Admin extends Controller
     }
     return $this->view->render('admin.php', [], 'layout.php');
   } 
+
 }

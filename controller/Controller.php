@@ -1,7 +1,7 @@
 <?php
 /**
  * Controller抽象クラス
- * あらゆる処理の担い手
+ * 
  */
 namespace Controller;
 use \App\Exception;
@@ -34,6 +34,9 @@ abstract class Controller
     if (!method_exists($this, $action)) {
       throw new Exception\HttpNotFound('アクションが存在しません');
     }
+    // if (true /* && !empty($this->ses/sion->get('auth')) */) { // TODO 要認証フラグ
+      // throw new Exception\Unauthorized();
+    // }
     
     $html = $this->$action($params);
     

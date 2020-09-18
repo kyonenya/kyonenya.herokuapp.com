@@ -41,6 +41,9 @@ class App
       
     } catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);
+    } catch (Exception\Unauthorized $e) {
+      $controller = $this->findController(\Config::ROUTE_ACTION[0]);
+      $controller->runAction(\Config::ROUTE_ACTION[1]);
     } catch (Exception $e) {
       // ! とりあえず表示させる
       print_r($e);

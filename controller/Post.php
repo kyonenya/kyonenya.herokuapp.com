@@ -1,10 +1,10 @@
 <?php
+namespace Controller;
+use \App\Exception;
 /**
  * Postコントローラー
  * 
  */
-namespace Controller;
-
 class Post extends Controller
 {
   /**
@@ -91,7 +91,7 @@ class Post extends Controller
   /**
    * POSTされた記事内容を取得する
    */
-  public function getPostedPost(): array
+  protected function getPostedPost(): array
   {
     if ($this->request->isPost() === false) {
       throw new Exception\HttpNotFound('不正なアクセスです');

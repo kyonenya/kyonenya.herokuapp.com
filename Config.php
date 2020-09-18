@@ -18,6 +18,7 @@ class Config
     '/posts/create' => [
       'controller' => 'Post',
       'action' => 'createAction',
+      'auth' => true,
     ],
     '/posts/store' => [
       'controller' => 'Post',
@@ -38,6 +39,7 @@ class Config
     '/admin' =>[
       'controller' => 'Admin',
       'action' => 'indexAction',
+      'auth' => true,
     ],
     '/admin/login' =>[
       'controller' => 'Admin',

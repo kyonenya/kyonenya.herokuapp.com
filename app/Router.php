@@ -1,10 +1,9 @@
 <?php
+ namespace App;
 /**
  * Routerクラス
  * リクエストURLからコントローラーを紐付ける
  */
-namespace App;
-
 class Router 
 {
   protected $routes;

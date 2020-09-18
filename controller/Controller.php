@@ -1,11 +1,10 @@
 <?php
+namespace Controller;
+use \App\Exception;
 /**
  * Controller抽象クラス
  * 
  */
-namespace Controller;
-use \App\Exception;
-
 abstract class Controller
 {
   protected $models = [];
@@ -29,14 +28,15 @@ abstract class Controller
   /**
    * 指定されたアクションを実行する
    */
-  public function runAction(string $action, array $params = []): ?string
+  public function runAction(string $action, array $params = [], ?bool $requireAuth = false): ?string
   {
     if (!method_exists($this, $action)) {
       throw new Exception\HttpNotFound('アクションが存在しません');
     }
-    // if (true /* && !empty($this->ses/sion->get('auth')) */) { // TODO 要認証フラグ
+    if ($requireAuth && empty($this->session->get('auth'))) {
       // throw new Exception\Unauthorized();
-    // }
+      $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
+    }
     
     $html = $this->$action($params);
     

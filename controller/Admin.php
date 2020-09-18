@@ -38,9 +38,9 @@ class Admin extends Controller
    */
   public function indexAction()
   {
-    if (empty($this->session->get('auth'))) {
-      $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
-    }
+    // if (empty($this->session->get('auth'))) {
+    //   $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
+    // }
     return $this->view->render('admin.php', [], 'layout.php');
   } 
 

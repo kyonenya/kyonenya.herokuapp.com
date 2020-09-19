@@ -49,6 +49,10 @@ class Config
       'controller' => 'Admin',
       'action' => 'authAction',
     ],
+    '/admin/logout' =>[
+      'controller' => 'Admin',
+      'action' => 'logoutAction',
+    ],
     '/about' => [
       'controller' => 'Page',
       'action' => 'aboutAction',
@@ -59,8 +63,7 @@ class Config
     ],
   ];
 
-  const ROUTE_ACTION = ['Admin', 'loginAction'];
-
+  const AUTH_PATH = '/admin/login';
 
   // ローカルのデータベースの接続設定
   const SQLITE_CONFIG = [

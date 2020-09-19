@@ -11,7 +11,6 @@ class App
   protected $controllers = [];
   protected $request;
   protected $router;
-  // TODO 消す
   protected $response;
 
   public function __construct()
@@ -35,14 +34,13 @@ class App
       $controller = $this->findController($routed['controllerClass']);
       // アクションを実行する
       $html = $controller->runAction($routed['action'], $routed['captured'], $routed['auth']);
-      // TODO 消す
+      // 
       $this->response->send($html);
       
-    // } catch (Exception\Unauthorized $e) {
+    } catch (Exception\Unauthorized $e) {
       // $controller = $this->findController('Admin');
       // $controller->runAction('loginAction');
-      // $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
-      // $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
+      $this->response->redirect(\Config::getBaseUrl() . \Config::AUTH_PATH);
     } 
     catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);

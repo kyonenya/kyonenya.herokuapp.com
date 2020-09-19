@@ -1,10 +1,10 @@
 <?php
+namespace Controller;
+use \App\Exception;
 /**
  * Adminコントローラー
  * 
  */
-namespace Controller;
-
 class Admin extends Controller
 {
   /**
@@ -25,9 +25,11 @@ class Admin extends Controller
     $isValid = password_verify($password, \Config::getPassword());
 
     if (!$isValid) {
-      $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
+      throw new Exception\Unauthorized();
     }
     
+    // セッションIDを再生成し、既存のセッションを破棄する（セッションハイジャック対策）
+    session_regenerate_id(true);
     $this->session->set('auth', true);    
     $this->response->redirect(\Config::getBaseUrl() . '/admin');
   }
@@ -44,4 +46,22 @@ class Admin extends Controller
     return $this->view->render('admin.php', [], 'layout.php');
   } 
 
+  /**
+   * ログアウトする
+   * 
+   * @author https://kappuccino-2.hatenadiary.org/entry/20080726/1217049706
+   */
+  public function logoutAction(): void
+  {
+    // セッション変数を空にする
+    $_SESSION = [];
+    // ブラウザ側のセッションIDを破棄させる
+    if (isset($_COOKIE[session_name()])) {
+      setcookie(session_name(), '', time() - 86400, '/');
+    }
+    // セッションIDを破棄する
+    session_destroy();
+
+    $this->response->redirect($this->baseUrl . '/');
+  }
 }

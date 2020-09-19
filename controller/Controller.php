@@ -34,8 +34,7 @@ abstract class Controller
       throw new Exception\HttpNotFound('アクションが存在しません');
     }
     if ($requireAuth && empty($this->session->get('auth'))) {
-      // throw new Exception\Unauthorized();
-      $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
+      throw new Exception\Unauthorized();
     }
     
     $html = $this->$action($params);

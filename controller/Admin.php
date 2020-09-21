@@ -48,8 +48,6 @@ class Admin extends Controller
 
   /**
    * ログアウトする
-   * 
-   * @author https://kappuccino-2.hatenadiary.org/entry/20080726/1217049706
    */
   public function logoutAction(): void
   {

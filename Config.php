@@ -23,18 +23,22 @@ class Config
     '/posts/store' => [
       'controller' => 'Post',
       'action' => 'storeAction',
+      'auth' => true,
     ],
     '/posts/edit/(?P<id>\d+)' => [
       'controller' => 'Post',
       'action' => 'editAction',
+      'auth' => true,
     ],
     '/posts/update/(?P<id>\d+)' => [
       'controller' => 'Post',
       'action' => 'updateAction',
+      'auth' => true,
     ],
     '/posts/delete/(?P<id>\d+)' => [
       'controller' => 'Post',
       'action' => 'deleteAction',
+      'auth' => true,
     ],
     '/admin' =>[
       'controller' => 'Admin',

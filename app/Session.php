@@ -11,7 +11,7 @@ class Session
   
   public function __construct()
   {
-    if (self::$isSessionStarted === false) {
+    if (!self::$isSessionStarted) {
       session_start();
       self::$isSessionStarted = true;
     }
@@ -20,7 +20,7 @@ class Session
   /**
    * セッションに値をセットする
    */  
-  public function set(string $key, string $value): void
+  public function set(string $key, $value): void
   {
     $_SESSION[$key] = $value;
   }
@@ -28,10 +28,10 @@ class Session
   /**
    * セッションから値を取得する
    */ 
-  public function get(string $key, string $default = null): ?string
+  public function get(string $key)
   {
-    return $_SESSION[$key] 
-      ?? $default;
+    return $_SESSION[$key]
+      ?? '';
   }
     
 }

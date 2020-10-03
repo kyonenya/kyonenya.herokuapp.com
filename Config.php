@@ -57,6 +57,10 @@ class Config
       'controller' => 'Admin',
       'action' => 'logoutAction',
     ],
+    '/api/posts' =>[
+      'controller' => 'Api',
+      'action' => 'getAllPostsAction',
+    ],
     '/about' => [
       'controller' => 'Page',
       'action' => 'aboutAction',

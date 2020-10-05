@@ -1,4 +1,5 @@
 <?php
+ namespace App;
 /**
  * Routerクラス
  * リクエストURLからコントローラーを紐付ける

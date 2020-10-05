@@ -1,4 +1,5 @@
 <?php
+ namespace App;
 /**
  * Requestクラス
  * ブラウザからのリクエスト情報やURL文字列の処理

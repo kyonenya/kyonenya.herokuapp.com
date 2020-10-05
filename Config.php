@@ -18,26 +18,32 @@ class Config
     '/posts/create' => [
       'controller' => 'Post',
       'action' => 'createAction',
+      'auth' => true,
     ],
     '/posts/store' => [
       'controller' => 'Post',
       'action' => 'storeAction',
+      'auth' => true,
     ],
     '/posts/edit/(?P<id>\d+)' => [
       'controller' => 'Post',
       'action' => 'editAction',
+      'auth' => true,
     ],
     '/posts/update/(?P<id>\d+)' => [
       'controller' => 'Post',
       'action' => 'updateAction',
+      'auth' => true,
     ],
     '/posts/delete/(?P<id>\d+)' => [
       'controller' => 'Post',
       'action' => 'deleteAction',
+      'auth' => true,
     ],
     '/admin' =>[
       'controller' => 'Admin',
       'action' => 'indexAction',
+      'auth' => true,
     ],
     '/admin/login' =>[
       'controller' => 'Admin',
@@ -46,6 +52,14 @@ class Config
     '/admin/auth' =>[
       'controller' => 'Admin',
       'action' => 'authAction',
+    ],
+    '/admin/logout' =>[
+      'controller' => 'Admin',
+      'action' => 'logoutAction',
+    ],
+    '/api/posts' =>[
+      'controller' => 'Api',
+      'action' => 'getAllPostsAction',
     ],
     '/about' => [
       'controller' => 'Page',
@@ -56,6 +70,8 @@ class Config
       'action' => 'worksAction',
     ],
   ];
+
+  const AUTH_PATH = '/admin/login';
 
   // ローカルのデータベースの接続設定
   const SQLITE_CONFIG = [
@@ -70,7 +86,7 @@ class Config
    */
   public static function getDbType(): string
   {  
-    if ($_ENV['DATABASE_URL']) {
+    if (isset($_ENV['DATABASE_URL'])) {
       // データベースURLからスキームを取得して返す
       return parse_url($_ENV['DATABASE_URL'])['scheme'];  // 'postgres'
     } else {
@@ -83,7 +99,7 @@ class Config
    */
   public static function getDbConfig(): array
   {   
-    if ($_ENV['DATABASE_URL']) {
+    if (isset($_ENV['DATABASE_URL'])) {
       return self::convertDbUrl($_ENV['DATABASE_URL']);
     } else {
       return self::SQLITE_CONFIG;
@@ -109,7 +125,8 @@ class Config
   }
   
   /**
-   * ベースURLを取得
+   * ベースURLを取得する
+   * 
    * リクエストURIのうち、パス情報を除いた無意味な部分。
    * プロジェクト全体で共通なので、RequestクラスではなくConfigクラスで保持する。
    * 例）'/index.php'
@@ -145,5 +162,15 @@ class Config
   {
     return $_SERVER['SERVER_SOFTWARE'] === 'DraftCode IDE Runtime';
   }
+
+  /**
+   * 管理者パスワードを取得する
+   */
+  public static function getPassword(): string
+  {
+    return $_ENV['ADMIN_PASSWORD']
+      ?? '';
+  }
+
 
 }

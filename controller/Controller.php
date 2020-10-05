@@ -1,11 +1,10 @@
 <?php
-/**
- * Controller抽象クラス
- * あらゆる処理の担い手
- */
 namespace Controller;
 use \App\Exception;
-
+/**
+ * Controller抽象クラス
+ * 
+ */
 abstract class Controller
 {
   protected $models = [];
@@ -29,10 +28,13 @@ abstract class Controller
   /**
    * 指定されたアクションを実行する
    */
-  public function runAction(string $action, array $params = []): ?string
+  public function runAction(string $action, array $params = [], ?bool $requireAuth = false): ?string
   {
     if (!method_exists($this, $action)) {
       throw new Exception\HttpNotFound('アクションが存在しません');
+    }
+    if ($requireAuth && empty($this->session->get('auth'))) {
+      throw new Exception\Unauthorized();
     }
     
     $html = $this->$action($params);

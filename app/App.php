@@ -1,7 +1,9 @@
 <?php
+namespace App;
+use \App\Exception;
 /**
  * Appクラス
- * アプリ全体のエントリーポイント
+ * アプリ全体のエントリーポイント。
  * ルーターとコントローラーを仲介し、中で生じた例外をキャッチする。
  */
 namespace App;
@@ -35,13 +37,19 @@ class App
       // コントローラーを呼び出す
       $controller = $this->findController($routed['controllerClass']);
       // アクションを実行する
-      $html = $controller->runAction($routed['action'], $routed['captured']);
-      // TODO 消す
+      $html = $controller->runAction($routed['action'], $routed['captured'], $routed['auth']);
+      // 
       $this->response->send($html);
       
-    } catch (Exception\HttpNotFound $e) {
+    } catch (Exception\Unauthorized $e) {
+      // $controller = $this->findController('Admin');
+      // $controller->runAction('loginAction');
+      $this->response->redirect(\Config::getBaseUrl() . \Config::AUTH_PATH);
+    } 
+    catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);
-    } catch (Exception $e) {
+    } 
+    catch (Exception $e) {
       // ! とりあえず表示させる
       print_r($e);
     }

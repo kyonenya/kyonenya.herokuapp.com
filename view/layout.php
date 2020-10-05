@@ -15,7 +15,7 @@
   <!-- アイコン画像 -->
   <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="<?= $dot ?>/img/apple-touch-icon-180x180.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="<?= $dot ?>/img/icon-192x192.png" />
-  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" href="<?= $dot ?>/favicon.ico" />
   <!-- 通常のメタデータ -->
   <meta name="description" content="言ってみただけ。哲学と哲学以外のことを書くテキストサイト" />
   <!-- SNS用のメタデータ -->
@@ -33,7 +33,7 @@
   <div class="ly_header_inner">
     <h1>
       <a href="<?= $baseUrl ?>/" class="el_logo">placet experiri</a>
-      <span class="el_logo_suffix"><?= $post['id'] ? ' :: ' . $post['id'] : '' ?></span>
+      <span class="el_logo_suffix"><?= ($post['id']) ? ' :: ' . $post['id'] : '' ?></span>
     </h1>
     <nav class="bl_nav">
       <ul class="bl_nav_inner">

@@ -42,7 +42,7 @@ class Response
   {
     header('Access-Control-Allow-Origin: *');
     header('Content-Type: application/json; charset=UTF-8');
-    header('X-Content-Type-Options', 'nosniff');
+    header('X-Content-Type-Options: nosniff');
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
   }
 }

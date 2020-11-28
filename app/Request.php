@@ -39,14 +39,11 @@ class Request
    */
   public function getRequestUri(): string
   {
-    $pos = strpos($_SERVER['REQUEST_URI'], '?');
+    if (strpos($_SERVER['REQUEST_URI'], '?') !== false) {
+      return strstr($_SERVER['REQUEST_URI'], '?', true); // before_needle = true
+    }
 
-    if ($pos === false) {
-      return $_SERVER['REQUEST_URI'];
-    } else {
-      // GETパラメータを削除、先頭から'?'の前までを返す
-      return substr($_SERVER['REQUEST_URI'], 0, $pos);
-    }   
+    return $_SERVER['REQUEST_URI'];
   }
 
   /**
@@ -55,7 +52,7 @@ class Request
   public function getGet(string $name, string $default = null): string
   {
     return (filter_input(INPUT_GET, $name))
-      ?? $default;  // GETパラメータがnullの場合
+      ?? $default;
   }
   
   /**

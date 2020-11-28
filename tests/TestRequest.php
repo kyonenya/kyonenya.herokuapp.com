@@ -13,8 +13,19 @@ class TestRequest extends TestCase
     $this->request = new Request();
   }
   
+  public function testGetRequestUri()
+  {
+    $_SERVER['REQUEST_URI'] = '/index.php/posts/123';
+    $this->assertEquals('/index.php/posts/123', $this->request->getRequestUri());
+
+    // if contains get parameter '?'
+    $_SERVER['REQUEST_URI'] = '/index.php/posts?id=123';
+    $this->assertEquals('/index.php/posts', $this->request->getRequestUri());
+  }
+  
   public function testIsPost()
   {
+    $_SERVER['REQUEST_METHOD'] = 'GET';
     $this->assertEquals(false, $this->request->isPost());
     
     $_SERVER['REQUEST_METHOD'] = 'POST';
@@ -30,3 +41,4 @@ class TestRequest extends TestCase
 
 $test = new TestRequest();
 $test->testIsPost();
+$test->testGetRequestUri();

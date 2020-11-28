@@ -63,11 +63,7 @@ class Request
    */
   public function isPost(): bool
   {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      return true;
-    } else {
-      return false;
-    }
+    return $_SERVER['REQUEST_METHOD'] === 'POST';
   }
   
   /**

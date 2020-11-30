@@ -1,19 +1,13 @@
 <?php
- namespace App;
+namespace App;
 /**
  * Routerクラス
  * リクエストURLからコントローラーを紐付ける
  */
-namespace App;
 
 class Router 
 {
   protected $routes;
-  
-  public function __construct()
-  {
-    $this->routes = \Config::ROUTE_DEFINITIONS;
-  }
 
   /**
    * ルーティングを実行する
@@ -21,7 +15,9 @@ class Router
    */
   public function resolve(?string $pathInfo = '/'): array
   {
-    foreach ($this->routes as $path => $routed) {
+    $routes = \Config::ROUTE_DEFINITIONS;
+    
+    foreach ($routes as $path => $routed) {
       $pattern = '#^' . $path . '$#';
       if (preg_match($pattern, $pathInfo, $matches) === 1) {
         // コントローラー名に名前空間を適用
@@ -30,6 +26,5 @@ class Router
         return array_merge($routed, ['captured' => $matches]);
       }
     }
-  }
-  
+  } 
 }

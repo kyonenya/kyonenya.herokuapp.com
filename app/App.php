@@ -31,7 +31,7 @@ class App
   public function run(): void
   {
     $pathInfo = $this->request->getPathInfo();    
-    $routed = $this->router->resolve($pathInfo);
+    $routed = $this->router->resolve($pathInfo, \Config::ROUTE_DEFINITIONS);
 
     try {
       // コントローラーを呼び出す

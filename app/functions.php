@@ -1,15 +1,17 @@
 <?php
-function h($str){
+function h($str)
+{
   return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
 
 /**
  * 色つきvar_dump
- * 
+ *
  * @author https://www.php.net/manual/ja/function.var-dump.php
  */
-function d($input, $collapse=false) {
-  $recursive = function($data, $level=0) use (&$recursive, $collapse) {
+function d($input, $collapse=false)
+{
+  $recursive = function ($data, $level=0) use (&$recursive, $collapse) {
     global $argv;
 
     $isTerminal = isset($argv);
@@ -62,13 +64,12 @@ function d($input, $collapse=false) {
     if (in_array($type, array("Object", "Array"))) {
       $notEmpty = false;
 
-      foreach($data as $key => $value) {
+      foreach ($data as $key => $value) {
         if (!$notEmpty) {
           $notEmpty = true;
 
           if ($isTerminal) {
             echo $type . ($type_length !== null ? "(" . $type_length . ")" : "")."\n";
-
           } else {
             $id = substr(md5(rand().":".$key.":".$level), 0, 8);
 
@@ -104,13 +105,11 @@ function d($input, $collapse=false) {
         if (!$isTerminal) {
           echo "</div>";
         }
-
       } else {
         echo $isTerminal ?
             $type . ($type_length !== null ? "(" . $type_length . ")" : "") . "  " :
             "<span style='color:#666666'>" . $type . ($type_length !== null ? "(" . $type_length . ")" : "") . "</span>&nbsp;&nbsp;";
       }
-
     } else {
       echo $isTerminal ?
           $type . ($type_length !== null ? "(" . $type_length . ")" : "") . "  " :
@@ -126,4 +125,3 @@ function d($input, $collapse=false) {
 
   call_user_func($recursive, $input);
 }
-?>

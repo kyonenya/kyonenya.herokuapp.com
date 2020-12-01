@@ -85,7 +85,7 @@ class Config
    * 'postgres'または'sqlite'
    */
   public static function getDbType(): string
-  {  
+  {
     if (isset($_ENV['DATABASE_URL'])) {
       // データベースURLからスキームを取得して返す
       return parse_url($_ENV['DATABASE_URL'])['scheme'];  // 'postgres'
@@ -98,7 +98,7 @@ class Config
    * データベースの接続設定を取得する
    */
   public static function getDbConfig(): array
-  {   
+  {
     if (isset($_ENV['DATABASE_URL'])) {
       return self::convertDbUrl($_ENV['DATABASE_URL']);
     } else {
@@ -114,7 +114,8 @@ class Config
     // データベースURLを展開
     $urls = parse_url($dbUrl);  // [scheme, host, port, user, pass, path]
     
-    $dsn = sprintf('pgsql:host=%s;dbname=%s',
+    $dsn = sprintf(
+      'pgsql:host=%s;dbname=%s',
       $urls['host'],  // 'ec2-(...).compute-1.amazonaws.com'
       ltrim($urls['path'], '/')  // データベース名
     );
@@ -126,7 +127,7 @@ class Config
   
   /**
    * ベースURLを取得する
-   * 
+   *
    * リクエストURIのうち、パス情報を除いた無意味な部分。
    * プロジェクト全体で共通なので、RequestクラスではなくConfigクラスで保持する。
    * 例）'/index.php'
@@ -171,6 +172,4 @@ class Config
     return $_ENV['ADMIN_PASSWORD']
       ?? '';
   }
-
-
 }

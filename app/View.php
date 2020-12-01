@@ -4,10 +4,11 @@
  * ビューのHTML文字列を組み立てて返す
  */
 namespace App;
+
 use \App\Exception;
 
 class View
-{ 
+{
   protected $viewDir;
   
   public function __construct()
@@ -31,7 +32,7 @@ class View
     // ビューに埋め込む変数を連想配列から一括展開
     extract($variables);
     // つねに埋め込む値
-    $baseUrl = \Config::getBaseUrl();  
+    $baseUrl = \Config::getBaseUrl();
     
     // requireした瞬間にechoされないよう、requireしたら文字列を受け取る
     ob_start();
@@ -56,9 +57,8 @@ class View
    */
   public function escape(string ...$vars): array
   {
-    return array_map(function($eachVar) {
-        return htmlspecialchars($eachVar, ENT_QUOTES, 'UTF-8');
+    return array_map(function ($eachVar) {
+      return htmlspecialchars($eachVar, ENT_QUOTES, 'UTF-8');
     }, $vars);
   }
-  
 }

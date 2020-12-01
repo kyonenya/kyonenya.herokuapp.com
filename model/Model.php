@@ -5,6 +5,7 @@
  * またはそれに限定されないデータ加工処理を担う。
  */
 namespace Model;
+
 use \PDO;
 use \PDOException;
 
@@ -66,15 +67,14 @@ abstract class Model
    * データベースに接続して接続情報を返す
    */
   public function connectDb(array $config): object
-  {    
+  {
     try {
       $pdo = new PDO($config['dsn'], $config['user'], $config['pass']);
       $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    } catch (PDOException $e){
+    } catch (PDOException $e) {
       echo 'データベース接続エラー：' . $e->getMessage();
       exit;
     }
     return $pdo;
   }
-
 }

@@ -5,7 +5,7 @@
  */
 namespace App;
 
-class Session 
+class Session
 {
   protected static $isSessionStarted = false;
   
@@ -19,7 +19,7 @@ class Session
   
   /**
    * セッションに値をセットする
-   */  
+   */
   public function set(string $key, $value): void
   {
     $_SESSION[$key] = $value;
@@ -27,11 +27,10 @@ class Session
   
   /**
    * セッションから値を取得する
-   */ 
+   */
   public function get(string $key)
   {
     return $_SESSION[$key]
       ?? '';
   }
-    
 }

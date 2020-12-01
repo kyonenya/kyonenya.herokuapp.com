@@ -1,5 +1,6 @@
 <?php
  namespace App;
+
 /**
  * Requestクラス
  * ブラウザからのリクエスト情報やURL文字列の処理
@@ -7,7 +8,7 @@
 namespace App;
 
 class Request
-{  
+{
   /**
    * パス情報を取得する
    * URLの中で最も重要な、ルーティングに用いる最末尾の部分
@@ -24,11 +25,11 @@ class Request
         
     if (\Config::isRewriteEngineOn()) {
       // リクエストURIからベースURLを引き算する
-      return substr($requestUri, strlen($baseUrl)); 
+      return substr($requestUri, strlen($baseUrl));
     } else {
       // クエリ文字列でパス情報を代用する
-      return $this->getGet('l', '/');      
-    }   
+      return $this->getGet('l', '/');
+    }
   }
   
   /**
@@ -71,5 +72,4 @@ class Request
     return (filter_input(INPUT_POST, $name))
       ?? $default;  // POST内容がnullの場合
   }
-  
 }

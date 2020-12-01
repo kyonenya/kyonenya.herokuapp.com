@@ -1,0 +1,7 @@
+<?php
+return PhpCsFixer\Config::create()
+  ->setIndent("  ")
+  ->setRiskyAllowed(true)
+  ->setRules([
+    '@PSR2' => true,
+  ]);

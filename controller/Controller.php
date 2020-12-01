@@ -1,9 +1,11 @@
 <?php
 namespace Controller;
+
 use \App\Exception;
+
 /**
  * Controller抽象クラス
- * 
+ *
  */
 abstract class Controller
 {
@@ -62,5 +64,4 @@ abstract class Controller
     
     return $this->models[$modelName];
   }
-  
 }

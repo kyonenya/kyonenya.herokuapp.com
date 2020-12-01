@@ -5,8 +5,8 @@
  */
 namespace App;
 
-class Response 
-{ 
+class Response
+{
   /**
    * ページを描画する
    */
@@ -18,7 +18,7 @@ class Response
   
   /**
    * リダイレクトする
-   */  
+   */
   public function redirect(string $url): void
   {
     http_response_code(302);  // 'found'

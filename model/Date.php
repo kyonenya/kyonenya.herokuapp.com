@@ -4,9 +4,10 @@
  * 日付・時刻の処理
  */
 namespace Model;
+
 use DateTimeImmutable;
 
-class Date 
+class Date
 {
   /**
    * 何日前・何ヶ月前などを計算する
@@ -54,7 +55,7 @@ class Date
   /**
    * 日付までに変換
    * 例）2020-09-13
-   */ 
+   */
   public static function formatYmd(string $date): string
   {
     $d = new DateTimeImmutable($date);

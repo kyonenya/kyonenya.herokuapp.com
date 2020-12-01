@@ -4,6 +4,7 @@
  * データベースのpostsテーブル・tagsテーブルのCRUD処理
  */
 namespace Model;
+
 use \PDO;
 
 class Posts extends Model
@@ -11,7 +12,8 @@ class Posts extends Model
   /**
    * 記事一覧データを取得して整形する
    */
-  public function getPostlist() {
+  public function getPostlist()
+  {
     $posts = $this->fetchAllPosts();
 
     return array_map(function ($post) {
@@ -59,7 +61,7 @@ class Posts extends Model
     $posts = $this->fetchAll($sql);
     
     // カンマ区切りで取得したタグを配列に展開しておく
-    return array_map(function($post) {
+    return array_map(function ($post) {
       $post['tags'] = explode(',', $post['tagcsv']);
       return array_merge($post, $post['tags']);
     }, $posts);
@@ -115,9 +117,9 @@ class Posts extends Model
 
     $created_at = $modified_at = Date::getCurrentTime();
 
-    $this->pdo->beginTransaction();    
+    $this->pdo->beginTransaction();
     // 記事を挿入
-    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]); 
+    $this->execute($sql_posts, [':title' => $title, ':body' => $body, ':created_at' => $created_at, ':modified_at' => $modified_at]);
     // 挿入した記事のidを取得
     $post_id = $this->getLastInsertedId();
     // タグを挿入

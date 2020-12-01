@@ -1,12 +1,15 @@
 <?php
 namespace App;
+
 use \App\Exception;
+
 /**
  * Appクラス
  * アプリ全体のエントリーポイント。
  * ルーターとコントローラーを仲介し、中で生じた例外をキャッチする。
  */
 namespace App;
+
 use \App\Exception;
 
 class App
@@ -30,7 +33,7 @@ class App
    */
   public function run(): void
   {
-    $pathInfo = $this->request->getPathInfo();    
+    $pathInfo = $this->request->getPathInfo();
     $routed = $this->router->resolve($pathInfo, \Config::ROUTE_DEFINITIONS);
 
     try {
@@ -38,18 +41,15 @@ class App
       $controller = $this->findController($routed['controllerClass']);
       // アクションを実行する
       $html = $controller->runAction($routed['action'], $routed['captured'], $routed['auth']);
-      // 
+      //
       $this->response->send($html);
-      
     } catch (Exception\Unauthorized $e) {
       // $controller = $this->findController('Admin');
       // $controller->runAction('loginAction');
       $this->response->redirect(\Config::getBaseUrl() . \Config::AUTH_PATH);
-    } 
-    catch (Exception\HttpNotFound $e) {
+    } catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);
-    } 
-    catch (Exception $e) {
+    } catch (Exception $e) {
       // ! とりあえず表示させる
       print_r($e);
     }
@@ -63,14 +63,13 @@ class App
   {
     if (!class_exists($controller)) {
       throw new Exception\HttpNotFound('コントローラーが存在しません');
-    }    
+    }
     // まだコントローラーインスタンスが生成されていない場合、
     if (!isset($this->controllers[$controller])) {
       // 新規作成して配列に登録する。
       $this->controllers[$controller] = new $controller();
-    } 
+    }
     
     return $this->controllers[$controller];
   }
-  
 }

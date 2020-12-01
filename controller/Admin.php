@@ -1,9 +1,11 @@
 <?php
 namespace Controller;
+
 use \App\Exception;
+
 /**
  * Adminコントローラー
- * 
+ *
  */
 class Admin extends Controller
 {
@@ -16,8 +18,8 @@ class Admin extends Controller
   }
   
   /**
-   * 
-   * 
+   *
+   *
    */
   public function authAction()
   {
@@ -30,13 +32,13 @@ class Admin extends Controller
     
     // セッションIDを再生成し、既存のセッションを破棄する（セッションハイジャック対策）
     session_regenerate_id(true);
-    $this->session->set('auth', true);    
+    $this->session->set('auth', true);
     $this->response->redirect(\Config::getBaseUrl() . '/admin');
   }
  
   /**
-   * 
-   * 
+   *
+   *
    */
   public function indexAction()
   {
@@ -44,7 +46,7 @@ class Admin extends Controller
     //   $this->response->redirect(\Config::getBaseUrl() . '/admin/login');
     // }
     return $this->view->render('admin.php', [], 'layout.php');
-  } 
+  }
 
   /**
    * ログアウトする

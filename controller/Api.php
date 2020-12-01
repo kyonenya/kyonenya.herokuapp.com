@@ -1,9 +1,11 @@
 <?php
 namespace Controller;
+
 use \App\Exception;
+
 /**
  * Apiコントローラー
- * 
+ *
  */
 class Api extends Controller
 {

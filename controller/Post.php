@@ -1,9 +1,11 @@
 <?php
 namespace Controller;
+
 use \App\Exception;
+
 /**
  * Postコントローラー
- * 
+ *
  */
 class Post extends Controller
 {
@@ -42,7 +44,7 @@ class Post extends Controller
    * 新規記事をデータベースに格納する
    */
   public function storeAction(): void
-  {    
+  {
     $posted = $this->getPostedPost();
     
     $this->findModel('Posts')->insertPost($posted['title'], $posted['body'], $posted['tags']);

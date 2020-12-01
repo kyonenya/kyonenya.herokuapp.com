@@ -1,5 +1,5 @@
 <?php
-function h($str)
+function h(string $str): string
 {
   return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
@@ -9,7 +9,7 @@ function h($str)
  *
  * @author https://www.php.net/manual/ja/function.var-dump.php
  */
-function d($input, $collapse=false)
+function d($input, $collapse = false)
 {
   $recursive = function ($data, $level=0) use (&$recursive, $collapse) {
     global $argv;

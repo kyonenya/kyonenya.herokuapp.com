@@ -8,10 +8,6 @@ use \App\Exception;
  * アプリ全体のエントリーポイント。
  * ルーターとコントローラーを仲介し、中で生じた例外をキャッチする。
  */
-namespace App;
-
-use \App\Exception;
-
 class App
 {
   protected $controllers = [];

@@ -15,14 +15,14 @@ class TestRouter extends TestCase
   
   public function testResolve()
   {
-    $this->assertEquals($this->router->resolve(), [
+    $this->assertEquals($this->router->resolve('/', \Config::ROUTE_DEFINITIONS), [
     	'controller' => 'Post',
     	'action' => 'indexAction',
     	'controllerClass' => '\Controller\Post',
     	'captured' => [0 => '/'],
     ]);
 
-    $this->assertEquals($this->router->resolve('/posts/create'), [
+    $this->assertEquals($this->router->resolve('/posts/create', \Config::ROUTE_DEFINITIONS), [
       'controller' => 'Post',
       'action' => 'createAction',
       'auth' => true,
@@ -30,7 +30,7 @@ class TestRouter extends TestCase
       'captured' => [0 => '/posts/create'],
     ]);
 
-    $this->assertEquals($this->router->resolve('/posts/123'), [
+    $this->assertEquals($this->router->resolve('/posts/123', \Config::ROUTE_DEFINITIONS), [
       'controller' => 'Post',
       'action' => 'articleAction',
       'controllerClass' => '\Controller\Post',

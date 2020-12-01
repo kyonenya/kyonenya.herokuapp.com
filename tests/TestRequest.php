@@ -16,11 +16,12 @@ class TestRequest extends TestCase
   public function testGetPathInfo()
   {
     $_GET = ['l' => '/posts/123'];
-    $this->assserEquals('/posts/123', $this->request->getPathInfo());
+    $this->assertEquals('/posts/123', $this->request->getPathInfo());
     
     $_SERVER['PATH_INFO'] = '/posts/123';
-    $this->assserEquals('/posts/123', $this->request->getPathInfo());
+    $this->assertEquals('/posts/123', $this->request->getPathInfo());
   }
+
   public function testGetRequestUri()
   {
     $_SERVER['REQUEST_URI'] = '/index.php/posts/123';

@@ -23,5 +23,7 @@ class Router
         return array_merge($routed, ['captured' => $matches]);
       }
     }
+    // lintエラーへの応急処置
+    return [];
   }
 }

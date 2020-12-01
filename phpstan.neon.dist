@@ -1,0 +1,10 @@
+parameters:
+  level: 4
+  paths:
+    - app
+    - controller
+    - model
+    - tests
+  autoload_files:
+    - vendor/autoload.php
+    - bootstrap.php

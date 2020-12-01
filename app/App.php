@@ -49,7 +49,7 @@ class App
       $this->response->redirect(\Config::getBaseUrl() . \Config::AUTH_PATH);
     } catch (Exception\HttpNotFound $e) {
       $this->response->render404page($e);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       // ! とりあえず表示させる
       print_r($e);
     }

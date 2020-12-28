@@ -15,7 +15,6 @@ class Api extends Controller
    */
   public function getAllPostsAction()
   {
-    //echo 'test';
     $posts = $this->findModel('Posts')->fetchAllPosts();
     $data = array_map(function ($post) {
       return [
@@ -27,5 +26,13 @@ class Api extends Controller
       ];
     }, $posts);
     $this->response->json($data);
+  }
+  
+  public function jsonAction(): void
+  {
+    $file = dirname(__FILE__) . '/../web/data/manuscripts_201228.json';
+    $json = file_get_contents($file);
+    $data = json_decode($json, true);
+    $this->findModel('Manuscripts')->insertPost($data['entries']);
   }
 }

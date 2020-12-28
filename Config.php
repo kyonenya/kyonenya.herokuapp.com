@@ -61,6 +61,10 @@ class Config
       'controller' => 'Api',
       'action' => 'getAllPostsAction',
     ],
+    '/api/json' =>[
+      'controller' => 'Api',
+      'action' => 'jsonAction',
+    ],
     '/about' => [
       'controller' => 'Page',
       'action' => 'aboutAction',

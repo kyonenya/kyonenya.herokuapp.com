@@ -33,6 +33,6 @@ class Api extends Controller
     $file = dirname(__FILE__) . '/../web/data/manuscripts_201228.json';
     $json = file_get_contents($file);
     $data = json_decode($json, true);
-    $this->findModel('Manuscripts')->insertPost($data['entries']);
+    $this->findModel('Manuscripts')->insertEntries($data['entries']);
   }
 }

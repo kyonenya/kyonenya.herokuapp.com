@@ -30,7 +30,7 @@ class Manuscripts extends Model
     foreach ($data as $aData) {
       $this->execute($sql, [
         ':text' => $aData['text'],
-        ':starred' => $aData['starred'],
+        ':starred' => (string)$aData['starred'],
         ':uuid' => $aData['uuid'],
         'creationDate' => $aData['creationDate'],
         'modifiedDate' => $aData['modifiedDate'],
